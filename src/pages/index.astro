@@ -1,16 +1,25 @@
 ---
-
+import BaseLayout from "@/layouts/BaseLayout.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title="Home • Portfolio" description="Portfolio sederhana dengan Astro">
+  <section style="display:grid; gap:12px; align-items:center; grid-template-columns: 1.2fr .8fr">
+    <div>
+      <h1 style="margin:0 0 8px">Hai, saya [Nama Anda] 👋</h1>
+      <p style="margin:0 0 16px; color:#555">Frontend developer yang suka membangun UI cepat, bersih, dan mudah dirawat. Jelajahi project, skills, dan hal-hal yang saya nikmati.</p>
+      
+    </div>
+    <div>
+      <img src="/images/avatar.jpg" alt="Avatar" style="max-width:260px; width:100%; border-radius:50%; border:1px solid #eee" />
+    </div>
+  </section>
+
+  <section style="margin-top:32px; display:grid; gap:10px">
+    <h2 style="margin:0">Sekilas</h2>
+    <ul style="color:#555">
+      <li>Fokus: Frontend, UI, Static Sites</li>
+      <li>Teknologi favorit: Astro, React, Tailwind</li>
+      <li>Terbuka untuk kolaborasi dan freelance</li>
+    </ul>
+  </section>
+</BaseLayout>

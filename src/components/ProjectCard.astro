@@ -1,0 +1,29 @@
+---
+const { project, href } = Astro.props as { project: { title: string; description: string; image: string; tech: string[]; url?: string; repo?: string }, href?: string };
+---
+<article style="border:1px solid #eee; border-radius:12px; overflow:hidden; display:flex; flex-direction:column">
+  {href ? (
+    <a href={href} style="display:block; line-height:0">
+      <img src={project.image} alt={project.title} loading="lazy" style="aspect-ratio:16/9; object-fit:cover; width:100%" />
+    </a>
+  ) : (
+    <img src={project.image} alt={project.title} loading="lazy" style="aspect-ratio:16/9; object-fit:cover; width:100%" />
+  )}
+  <div style="padding:14px">
+    {href ? (
+      <h3 style="margin:0 0 6px"><a href={href} style="text-decoration:none; color:inherit">{project.title}</a></h3>
+    ) : (
+      <h3 style="margin:0 0 6px">{project.title}</h3>
+    )}
+    <p style="margin:0 0 10px; color:#555">{project.description}</p>
+    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px">
+      {project.tech.map((t) => (
+        <span style="font-size:.8rem; padding:4px 8px; border:1px solid #eee; border-radius:999px">{t}</span>
+      ))}
+    </div>
+    <div style="display:flex; gap:10px">
+      {project.url && <a href={project.url} target="_blank" rel="noreferrer">Live</a>}
+      {project.repo && <a href={project.repo} target="_blank" rel="noreferrer">Repo</a>}
+    </div>
+  </div>
+</article>
