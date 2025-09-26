@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+/* Base palette */
+:root {
+  --bg-950: #0b0f1a;
+  --bg-900: #0f172a;
+  --text-100: #e5e7eb;
+  --muted-400: #94a3b8;
+}
+
+/* Subtle noise overlay (not a gradient) */
+.noise-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml;utf8,\
+    <svg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'>\
+      <filter id='n'>\
+        <feTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/>\
+      </filter>\
+      <rect width='100%' height='100%' filter='url(%23n)' opacity='0.6'/>\
+    </svg>");
+  background-size: 140px 140px;
+}
+/* Thin bright streaks */
+.grok-light-effect::after {
+  content: "";
+  position: absolute;
+  top: 45%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow:
+    0 -2px 4px rgba(255, 255, 255, 0.4),
+    0 2px 4px rgba(255, 255, 255, 0.4),
+    0 -5px 10px rgba(255, 255, 255, 0.2),
+    0 5px 10px rgba(255, 255, 255, 0.2);
+  transform: rotate(-15deg);
+  opacity: 0.7;
+  filter: blur(0.5px);
+}
+
+/* Blue accent for main rainbow */
+.blue-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -5;
+  overflow: hidden;
+}
+
+.blue-accent::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 100, 255, 0.3) 0%,
+    rgba(0, 50, 200, 0.2) 30%,
+    rgba(0, 20, 150, 0.1) 60%,
+    transparent 100%
+  );
+  filter: blur(40px);
+  mix-blend-mode: screen;
+  opacity: 0.6;
+}

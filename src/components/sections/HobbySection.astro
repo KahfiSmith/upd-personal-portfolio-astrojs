@@ -1,0 +1,24 @@
+---
+import AnimatedText from "@/components/ui/AnimatedText.astro";
+import ParallaxSection from "@/components/ui/ParallaxSection.astro";
+---
+
+<ParallaxSection id="hobby" class="mx-auto max-w-5xl px-6 py-24 sm:py-32" speed={0.35}>
+  <AnimatedText 
+    text="Hobby" 
+    as="h2" 
+    class="text-2xl sm:text-3xl font-semibold mb-6"
+    type="words"
+  />
+  <div class="grid gap-6 sm:grid-cols-2">
+    <div class="rounded-xl border border-neutral-800/80 bg-neutral-900/40 p-5" data-animate="fade-up">
+      <p class="font-medium mb-1">Belajar UI Animations</p>
+      <p class="text-neutral-300 text-sm">Eksperimen micro-interactions, motion timing, dan performance profiling.</p>
+    </div>
+    <div class="rounded-xl border border-neutral-800/80 bg-neutral-900/40 p-5" data-animate="fade-up" data-delay="0.1">
+      <p class="font-medium mb-1">Menulis Blog</p>
+      <p class="text-neutral-300 text-sm">Berbagi catatan frontend, tooling, dan best-practices.</p>
+    </div>
+  </div>
+</ParallaxSection>
+

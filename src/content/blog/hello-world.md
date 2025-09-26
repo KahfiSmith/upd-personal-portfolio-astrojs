@@ -1,11 +1,14 @@
 ---
-title: Hello World
-description: Post pembuka blog sederhana.
-image: /images/blog/hello.jpg
-date: 2024-08-01
-tags:
-  - update
+title: "Hello World"
+date: "2025-01-01"
+summary: "Postingan pertama untuk menguji setup blog."
 ---
 
-Selamat datang di blog! Ini adalah entri pertama untuk menguji struktur `/blog/[slug]` di Astro.
+Selamat datang di blog! Ini adalah postingan percobaan untuk memastikan struktur konten berjalan dengan baik.
+
+Beberapa hal yang akan dibahas nanti:
+
+- Frontend performance tips
+- GSAP dan animasi UI
+- Workflow Astro + Tailwind
 

@@ -1,25 +1,28 @@
 ---
-import BaseLayout from "@/layouts/BaseLayout.astro";
+import SiteLayout from "@/layouts/SiteLayout.astro";
 ---
 
-<BaseLayout title="Home • Portfolio" description="Portfolio sederhana dengan Astro">
-  <section style="display:grid; gap:12px; align-items:center; grid-template-columns: 1.2fr .8fr">
-    <div>
-      <h1 style="margin:0 0 8px">Hai, saya [Nama Anda] 👋</h1>
-      <p style="margin:0 0 16px; color:#555">Frontend developer yang suka membangun UI cepat, bersih, dan mudah dirawat. Jelajahi project, skills, dan hal-hal yang saya nikmati.</p>
-      
-    </div>
-    <div>
-      <img src="/images/avatar.jpg" alt="Avatar" style="max-width:260px; width:100%; border-radius:50%; border:1px solid #eee" />
-    </div>
-  </section>
-
-  <section style="margin-top:32px; display:grid; gap:10px">
-    <h2 style="margin:0">Sekilas</h2>
-    <ul style="color:#555">
-      <li>Fokus: Frontend, UI, Static Sites</li>
-      <li>Teknologi favorit: Astro, React, Tailwind</li>
-      <li>Terbuka untuk kolaborasi dan freelance</li>
-    </ul>
-  </section>
-</BaseLayout>
+<SiteLayout title="Mohamad Al-Kahfi — Frontend Web Developer" description="Frontend Web Developer fokus pada performa, aksesibilitas, dan UX yang halus">
+  <main>
+    <section class="relative min-h-[88vh] flex items-center overflow-hidden">
+      <div class="noise-overlay" aria-hidden="true"></div>
+      <div class="relative z-10 mx-auto max-w-6xl px-6 py-24 sm:py-28">
+        <p class="text-xs sm:text-sm tracking-widest text-neutral-400" data-animate="fade-in">HELLO, I'M</p>
+        <h1 class="mt-2 text-4xl sm:text-6xl md:text-7xl font-semibold tracking-tight leading-[1.1]">
+          Mohamad Al-Kahfi
+        </h1>
+        <p class="mt-4 text-lg sm:text-2xl text-neutral-300 max-w-2xl" data-animate="fade-up" data-delay="0.1">
+          Frontend Web Developer yang membangun antarmuka cepat, bersih, dan mudah digunakan.
+        </p>
+        <div class="mt-10 flex items-center gap-4" data-animate="fade-up" data-delay="0.2">
+          <a href="/works" class="inline-flex items-center gap-2 rounded-md bg-blue-500/90 hover:bg-blue-400 text-neutral-900 px-5 py-3 font-medium transition-colors">
+            Explore Works
+          </a>
+          <a href="/about" class="inline-flex items-center gap-2 rounded-md border border-neutral-700 hover:border-neutral-500 text-neutral-200 px-5 py-3 font-medium transition-colors">
+            About Me
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+</SiteLayout>

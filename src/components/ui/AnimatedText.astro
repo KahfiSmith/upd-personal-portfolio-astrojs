@@ -1,0 +1,90 @@
+---
+interface Props {
+  text: string;
+  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';
+  class?: string;
+  type?: 'chars' | 'words' | 'lines';
+  stagger?: number;
+  delay?: number;
+}
+
+const { 
+  text, 
+  as: Element = 'h2', 
+  class: className = '', 
+  type = 'chars',
+  stagger = 0.03,
+  delay = 0
+} = Astro.props;
+---
+
+<Element class={`animated-text ${className}`} data-text-animation data-animation-type={type} data-stagger={stagger} data-delay={delay}>
+  {text}
+  </Element>
+
+<script type="module">
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  gsap.registerPlugin(ScrollTrigger);
+
+  function splitText(el, type) {
+    const text = el.textContent || "";
+    el.textContent = "";
+    const frag = document.createDocumentFragment();
+    const wrap = (t) => {
+      const span = document.createElement("span");
+      span.textContent = t;
+      span.style.display = "inline-block";
+      span.style.willChange = "transform, opacity";
+      return span;
+    };
+
+    let nodes = [];
+    if (type === "words") {
+      text.split(/(\s+)/).forEach((w) => {
+        if (w.trim().length === 0) {
+          frag.appendChild(document.createTextNode(w));
+        } else {
+          const n = wrap(w);
+          nodes.push(n);
+          frag.appendChild(n);
+        }
+      });
+    } else { // default to chars
+      Array.from(text).forEach((ch) => {
+        if (ch === " ") {
+          frag.appendChild(document.createTextNode(" "));
+        } else {
+          const n = wrap(ch);
+          nodes.push(n);
+          frag.appendChild(n);
+        }
+      });
+    }
+    el.appendChild(frag);
+    return nodes;
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const animatedTextElements = document.querySelectorAll("[data-text-animation]");
+    animatedTextElements.forEach((el) => {
+      const type = el.getAttribute("data-animation-type") || "chars";
+      const stagger = parseFloat(el.getAttribute("data-stagger") || "0.03");
+      const delay = parseFloat(el.getAttribute("data-delay") || "0");
+
+      const targets = splitText(el, type);
+
+      gsap.from(targets, {
+        opacity: 0,
+        y: 20,
+        rotateX: 30,
+        duration: 0.7,
+        stagger,
+        ease: "power3.out",
+        delay,
+        scrollTrigger: { trigger: el, start: "top 85%" }
+      });
+    });
+  });
+  </script>
+

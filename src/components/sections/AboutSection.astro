@@ -1,0 +1,29 @@
+---
+import AnimatedText from "@/components/ui/AnimatedText.astro";
+import ParallaxSection from "@/components/ui/ParallaxSection.astro";
+---
+
+<ParallaxSection id="about" class="mx-auto max-w-5xl px-6 py-24 sm:py-32" speed={0.4}>
+  <AnimatedText 
+    text="About" 
+    as="h2" 
+    class="text-2xl sm:text-3xl font-semibold mb-6"
+    type="words"
+  />
+  <p class="text-neutral-300 leading-relaxed" data-animate="fade-up">
+    Saya adalah <strong>Frontend Web Developer</strong> yang suka membangun antarmuka yang cepat,
+    bersih, dan mudah digunakan. Saya senang mengoptimalkan animasi dan interaksi agar terasa
+    alami, sambil tetap menjaga performa dan aksesibilitas.
+  </p>
+  <div class="mt-8 grid sm:grid-cols-2 gap-6">
+    <div class="rounded-xl border border-neutral-800/80 p-5 bg-neutral-900/40" data-animate="scale-in" data-delay="0.1">
+      <p class="text-sm text-neutral-400 mb-1">Fokus</p>
+      <p class="font-medium">UI/UX, Performance, Accessibility</p>
+    </div>
+    <div class="rounded-xl border border-neutral-800/80 p-5 bg-neutral-900/40" data-animate="scale-in" data-delay="0.2">
+      <p class="text-sm text-neutral-400 mb-1">Tools</p>
+      <p class="font-medium">Astro, React, Tailwind, GSAP</p>
+    </div>
+  </div>
+</ParallaxSection>
+

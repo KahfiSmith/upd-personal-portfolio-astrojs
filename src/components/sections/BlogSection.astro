@@ -1,0 +1,29 @@
+---
+import AnimatedText from "@/components/ui/AnimatedText.astro";
+import ParallaxSection from "@/components/ui/ParallaxSection.astro";
+
+const posts = await Astro.glob("../content/blog/*.md");
+---
+
+<ParallaxSection id="blog" class="mx-auto max-w-5xl px-6 py-24 sm:py-32" speed={0.25}>
+  <AnimatedText 
+    text="Blog" 
+    as="h2" 
+    class="text-2xl sm:text-3xl font-semibold mb-6"
+    type="words"
+  />
+  {posts.length === 0 ? (
+    <p class="text-neutral-400" data-animate="fade-in">Belum ada tulisan.</p>
+  ) : (
+    <div class="grid gap-5">
+      {posts.map((p) => (
+        <a href={`/blog/${p.file.split('/').pop()?.replace('.md','')}`} class="block rounded-xl border border-neutral-800/80 bg-neutral-900/40 p-5 hover:border-neutral-600 transition-colors" data-animate="fade-up">
+          <p class="text-sm text-neutral-400">{p.frontmatter.date}</p>
+          <h3 class="font-semibold text-lg">{p.frontmatter.title}</h3>
+          {p.frontmatter.summary && <p class="text-neutral-300 mt-1 text-sm">{p.frontmatter.summary}</p>}
+        </a>
+      ))}
+    </div>
+  )}
+</ParallaxSection>
+
