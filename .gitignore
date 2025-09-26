@@ -5,6 +5,8 @@ dist/
 
 # dependencies
 node_modules/
+# vite cache
+node_modules/.vite/
 
 # logs
 npm-debug.log*
@@ -15,9 +17,26 @@ pnpm-debug.log*
 # environment variables
 .env
 .env.production
+.env.local
+.env.development
+.env.test
+
+# cache/coverage
+.eslintcache
+coverage/
+
+# editor settings (optional)
+.vscode/
+
+# platform deploy
+.vercel/
+.netlify/
 
 # macOS-specific files
 .DS_Store
+
+# Windows
+Thumbs.db
 
 # jetbrains setting folder
 .idea/
