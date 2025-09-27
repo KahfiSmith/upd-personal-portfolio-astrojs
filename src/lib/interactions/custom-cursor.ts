@@ -4,5 +4,8 @@
 
 import "@/scripts/custom-cursor-gsap.ts";
 
-// Keep as an ES module (no exports needed)
-export {};
+// Provide a default export for barrels expecting it.
+// This is a no-op because initialization runs at import time above.
+export default function initCustomCursor(): void {
+  // intentionally empty
+}
