@@ -2,7 +2,7 @@
 // Single white circle with mix-blend-mode difference
 // Smooth trailing animation with subtle hover effects
 
-function initCursor(): void {
+export function initCustomCursor(): void {
   const root = document.getElementById("custom-cursor");
   if (!root) return;
 
@@ -21,9 +21,11 @@ function initCursor(): void {
   let isVisible = false;
 
   // Smooth trailing animation
-  const lerp = (start: number, end: number, factor: number) => {
-    return start + (end - start) * factor;
-  };
+  const lerp = (start: number, end: number, factor: number) => start + (end - start) * factor;
+
+  let isHovering = false;
+  let hoverScale = 1;
+  let currentStretch = 0; // Smooth stretch transition
 
   // Animation loop
   const animate = () => {
@@ -42,28 +44,27 @@ function initCursor(): void {
     const velocityX = cursorX - prevX;
     const velocityY = cursorY - prevY;
     const velocity = Math.sqrt(velocityX * velocityX + velocityY * velocityY);
-    
+
     // Elastic effect only kicks in with fast movement
     const velocityThreshold = 3; // Higher threshold - only fast movements
-    const targetStretch = velocity > velocityThreshold ? 
-      Math.min((velocity - velocityThreshold) * 0.12, 0.35) : 0;
-    
+    const targetStretch = velocity > velocityThreshold ? Math.min((velocity - velocityThreshold) * 0.12, 0.35) : 0;
+
     // Smooth stretch transition to avoid jumpiness
     currentStretch = lerp(currentStretch, targetStretch, 0.2);
-    
+
     // Calculate rotation based on movement direction (only when stretching significantly)
     const angle = currentStretch > 0.05 ? Math.atan2(velocityY, velocityX) : 0;
-    
+
     // Apply elastic scaling - stretch in direction of movement
     let scaleX = (1 + currentStretch) * hoverScale;
     let scaleY = Math.max(0.75, 1 - currentStretch * 0.5) * hoverScale;
-    
+
     // If hovering, reduce elastic effect and keep more circular
     if (isHovering) {
       scaleX = lerp(scaleX, hoverScale, 0.3);
       scaleY = lerp(scaleY, hoverScale, 0.3);
     }
-    
+
     cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) translate(-50%, -50%) rotate(${angle}rad) scaleX(${scaleX}) scaleY(${scaleY})`;
     requestAnimationFrame(animate);
   };
@@ -76,7 +77,7 @@ function initCursor(): void {
     // Check if hovering over text inputs - hide cursor
     const target = e.target as Element;
     const isTextInput = target?.closest('input[type="text"], input[type="email"], input[type="search"], input[type="url"], input[type="tel"], textarea, [contenteditable="true"]');
-    
+
     if (isTextInput) {
       cursor.style.opacity = "0";
       return;
@@ -102,17 +103,13 @@ function initCursor(): void {
   // Hover effects for interactive elements
   const hoverSelector = [
     "a",
-    "button", 
+    "button",
     "input[type=button]",
     "input[type=submit]",
     "[role=button]",
     "[data-cursor]",
-    ".cursor-hover"
+    ".cursor-hover",
   ].join(",");
-
-  let isHovering = false;
-  let hoverScale = 1;
-  let currentStretch = 0; // Smooth stretch transition
 
   const onMouseEnter = () => {
     isHovering = true;
@@ -135,14 +132,14 @@ function initCursor(): void {
 
   // Initial setup
   attachHoverListeners();
-  
+
   // Watch for DOM changes to attach listeners to new elements
   const observer = new MutationObserver(attachHoverListeners);
   observer.observe(document.documentElement, { childList: true, subtree: true });
 
   // Event listeners
   window.addEventListener("mousemove", onMouseMove, { passive: true });
-  
+
   // Hide cursor when leaving window
   window.addEventListener("mouseleave", () => {
     cursor.style.opacity = "0";
@@ -157,11 +154,3 @@ function initCursor(): void {
   });
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initCursor, { once: true });
-} else {
-  initCursor();
-}
-
-// Export to make this a proper ES module
-export {};

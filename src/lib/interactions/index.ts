@@ -1,2 +1,2 @@
-export { default as initCustomCursor } from '@/lib/interactions/custom-cursor';
-export { default as initSmoothScroll } from '@/lib/interactions/smooth-scroll';
+export { initCustomCursor } from '@/lib/interactions/init-custom-cursor';
+export { initSmoothScroll } from '@/lib/interactions/init-smooth-scroll';

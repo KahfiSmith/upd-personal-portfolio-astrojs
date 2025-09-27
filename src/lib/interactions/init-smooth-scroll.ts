@@ -1,4 +1,4 @@
-export default function initSmoothScroll() {
+export function initSmoothScroll(): void {
   const supports = 'scrollBehavior' in document.documentElement.style;
   document.addEventListener('click', (e) => {
     const a = (e.target as HTMLElement).closest('a[href^="#"]') as HTMLAnchorElement | null;
@@ -17,8 +17,3 @@ export default function initSmoothScroll() {
   }, { passive: false });
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initSmoothScroll, { once: true });
-} else {
-  initSmoothScroll();
-}
