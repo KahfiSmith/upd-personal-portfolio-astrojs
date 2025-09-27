@@ -2,25 +2,34 @@
 import SiteLayout from "@/layouts/SiteLayout.astro";
 ---
 
-<SiteLayout title="Mohamad Al-Kahfi — Frontend Web Developer" description="Frontend Web Developer fokus pada performa, aksesibilitas, dan UX yang halus">
+<SiteLayout
+  title="Mohamad Al-Kahfi — Frontend Developer"
+  description="Frontend developer focused on performance, accessibility, and serene UX."
+>
   <main>
-    <section class="relative min-h-[88vh] flex items-center overflow-hidden">
-      <div class="noise-overlay" aria-hidden="true"></div>
-      <div class="relative z-10 mx-auto max-w-6xl px-6 py-24 sm:py-28">
-        <p class="text-xs sm:text-sm tracking-widest text-neutral-400" data-animate="fade-in">HELLO, I'M</p>
-        <h1 class="mt-2 text-4xl sm:text-6xl md:text-7xl font-semibold tracking-tight leading-[1.1]">
-          Mohamad Al-Kahfi
+    <section class="min-h-screen flex items-center justify-center">
+      <div class="text-start">
+        <h1
+          class="text-4xl md:text-8xl font-bold mb-4 px-4 font-editorial tracking-wide"
+        >
+          Portfolio of Mohamad Al-Kahfi
         </h1>
-        <p class="mt-4 text-lg sm:text-2xl text-neutral-300 max-w-2xl" data-animate="fade-up" data-delay="0.1">
-          Frontend Web Developer yang membangun antarmuka cepat, bersih, dan mudah digunakan.
-        </p>
-        <div class="mt-10 flex items-center gap-4" data-animate="fade-up" data-delay="0.2">
-          <a href="/works" class="inline-flex items-center gap-2 rounded-md bg-blue-500/90 hover:bg-blue-400 text-neutral-900 px-5 py-3 font-medium transition-colors">
-            Explore Works
-          </a>
-          <a href="/about" class="inline-flex items-center gap-2 rounded-md border border-neutral-700 hover:border-neutral-500 text-neutral-200 px-5 py-3 font-medium transition-colors">
-            About Me
-          </a>
+        <div class="flex max-w-7xl mx-auto flex-col md:flex-row items-start">
+          <h1
+            class="text-4xl md:text-6xl font-bold mb-4 px-4 font-editorial tracking-wide w-full"
+          >
+            Frontend Web developer
+          </h1>
+          <p
+            class="text-lg md:text-2xl mx-auto px-4 w-full"
+            data-animate="fade-in"
+            data-delay="0.3"
+          >
+            Frontend developer focused on performance, accessibility, and serene
+            UX. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Fuga
+            facilis at doloribus esse eligendi officiis laudantium temporibus id
+            pariatur obcaecati?
+          </p>
         </div>
       </div>
     </section>

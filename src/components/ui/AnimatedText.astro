@@ -27,10 +27,20 @@ const {
   import { ScrollTrigger } from "gsap/ScrollTrigger";
   gsap.registerPlugin(ScrollTrigger);
 
+  /**
+   * Split an element's text content into spans for animation.
+   * @param {HTMLElement} el
+   * @param {"chars"|"words"|"lines"} type
+   * @returns {HTMLElement[]}
+   */
   function splitText(el, type) {
     const text = el.textContent || "";
     el.textContent = "";
     const frag = document.createDocumentFragment();
+    /**
+     * @param {string} t
+     * @returns {HTMLSpanElement}
+     */
     const wrap = (t) => {
       const span = document.createElement("span");
       span.textContent = t;
@@ -39,6 +49,7 @@ const {
       return span;
     };
 
+    /** @type {HTMLElement[]} */
     let nodes = [];
     if (type === "words") {
       text.split(/(\s+)/).forEach((w) => {
@@ -66,9 +77,10 @@ const {
   }
 
   document.addEventListener("DOMContentLoaded", () => {
+    /** @type {NodeListOf<HTMLElement>} */
     const animatedTextElements = document.querySelectorAll("[data-text-animation]");
     animatedTextElements.forEach((el) => {
-      const type = el.getAttribute("data-animation-type") || "chars";
+      const type = (el.getAttribute("data-animation-type") || "chars");
       const stagger = parseFloat(el.getAttribute("data-stagger") || "0.03");
       const delay = parseFloat(el.getAttribute("data-delay") || "0");
 
@@ -87,4 +99,3 @@ const {
     });
   });
   </script>
-

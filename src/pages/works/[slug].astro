@@ -1,9 +1,11 @@
 ---
 import SiteLayout from "@/layouts/SiteLayout.astro";
 import works from "@/data/works";
+import type { Work } from "@/data/works";
 
-const { slug } = Astro.params;
-const work = works.find((w) => w.slug === slug);
+const slug = Astro.params.slug as string;
+const allWorks = works as Work[];
+const work = allWorks.find((w) => w.slug === slug);
 if (!work) {
   Astro.response.status = 404;
 }
@@ -18,7 +20,7 @@ if (!work) {
         <p class="mt-4 text-neutral-300 leading-relaxed">{work.description}</p>
         {work.tech?.length > 0 && (
           <div class="mt-6 flex flex-wrap gap-2">
-            {work.tech.map((t) => (
+            {work.tech.map((t: string) => (
               <span class="px-2.5 py-1 rounded bg-neutral-800/70 text-neutral-300 text-xs">{t}</span>
             ))}
           </div>
@@ -34,4 +36,3 @@ if (!work) {
     )}
   </main>
 </SiteLayout>
-

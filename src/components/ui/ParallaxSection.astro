@@ -34,10 +34,12 @@ const {
   gsap.registerPlugin(ScrollTrigger);
   
   document.addEventListener("DOMContentLoaded", () => {
+    /** @type {NodeListOf<HTMLElement>} */
     const parallaxSections = document.querySelectorAll(".parallax-section");
     
     parallaxSections.forEach((section) => {
       const speed = parseFloat(section.getAttribute("data-speed") || "0.5");
+      /** @type {NodeListOf<HTMLElement>} */
       const bgElements = section.querySelectorAll("[data-speed]");
       
       // Create parallax effect for background elements
@@ -72,4 +74,3 @@ const {
     });
   });
   </script>
-
