@@ -107,7 +107,7 @@ import SiteLayout from "@/layouts/SiteLayout.astro";
           <!-- Center - Main Title -->
           <div class="text-center">
             <h1
-              class="text-[3rem] sm:text-[5rem] md:text-[10rem] lg:text-[14rem] xl:text-[18rem] font-medium leading-[0.75] text-charcoal mb-8 md:mb-12 font-display text-shadow-soft responsive-title tracking-thighter"
+              class="text-[3rem] sm:text-[5rem] md:text-[10rem] lg:text-[14rem] xl:text-[18rem] font-medium leading-[0.75] text-charcoal mb-8 md:mb-12 font-display text-shadow-soft responsive-title"
             >
               Portfolio
             </h1>
@@ -123,32 +123,6 @@ import SiteLayout from "@/layouts/SiteLayout.astro";
               >
                 Frontend Web Developer
               </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bottom Section -->
-        <div class="flex justify-center items-center">
-          <!-- Bottom Center - Navigation hint -->
-          <div class="text-center">
-            <div
-              class="text-xs md:text-sm text-charcoal/50 uppercase tracking-wider font-sans"
-            >
-              Scroll to explore
-            </div>
-            <div class="mt-2">
-              <svg
-                class="w-4 h-4 mx-auto text-charcoal/40 animate-bounce cursor-pointer hover:text-charcoal/60 transition-colors"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-              </svg>
             </div>
           </div>
         </div>
@@ -250,100 +224,3 @@ import SiteLayout from "@/layouts/SiteLayout.astro";
     </div>
   </div>
 </section>
-
-<script>
-  import { gsap } from "gsap";
-
-  document.addEventListener("DOMContentLoaded", () => {
-    // Hero section fade-in animation
-    const heroSection = document.getElementById("hero");
-    if (heroSection) {
-      gsap.fromTo(
-        heroSection,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
-      );
-    }
-
-    // Get in Touch pill animations
-    const getInTouchBtn = document.querySelector("[data-get-in-touch]");
-    const circleBackground = document.querySelector("[data-circle-bg]");
-    const ripple = document.querySelector("[data-ripple]");
-
-    if (getInTouchBtn && circleBackground && ripple) {
-      // Set initial position
-      gsap.set(circleBackground, { x: "-100%" });
-
-      // Very subtle floating animation
-      gsap.to(getInTouchBtn, {
-        y: -2,
-        duration: 4,
-        repeat: -1,
-        yoyo: true,
-        ease: "power2.inOut",
-      });
-
-      // Hover animations
-      getInTouchBtn.addEventListener("mouseenter", () => {
-        gsap.to(circleBackground, {
-          x: 0,
-          duration: 0.4,
-          ease: "power2.out",
-        });
-
-        gsap.to(getInTouchBtn, {
-          y: -3,
-          duration: 0.3,
-          ease: "power2.out",
-        });
-
-        // Ripple effect
-        gsap.fromTo(
-          ripple,
-          { scale: 1, opacity: 0.5 },
-          { scale: 1.1, opacity: 0, duration: 0.6, ease: "power2.out" }
-        );
-      });
-
-      getInTouchBtn.addEventListener("mouseleave", () => {
-        gsap.to(circleBackground, {
-          x: "-100%",
-          duration: 0.4,
-          ease: "power2.out",
-        });
-
-        gsap.to(getInTouchBtn, {
-          y: -2,
-          duration: 0.3,
-          ease: "power2.out",
-        });
-      });
-
-      // Click effect
-      getInTouchBtn.addEventListener("click", () => {
-        gsap.fromTo(
-          getInTouchBtn,
-          { scale: 1 },
-          {
-            scale: 0.95,
-            duration: 0.1,
-            ease: "power2.out",
-            yoyo: true,
-            repeat: 1,
-          }
-        );
-      });
-    }
-
-    // Smooth scroll for scroll indicator
-    const scrollIndicator = document.querySelector(".animate-bounce");
-    if (scrollIndicator) {
-      scrollIndicator.addEventListener("click", () => {
-        window.scrollTo({
-          top: window.innerHeight,
-          behavior: "smooth",
-        });
-      });
-    }
-  });
-</script>

@@ -41,14 +41,6 @@
   --font-mono: "Space Grotesk", ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
 }
 
-/* LogoFolio-inspired styles */
-.logofolio-gradient {
-  background: radial-gradient(circle at center, #3b82f6 0%, #1d4ed8 40%, #1e40af 70%, rgba(30, 64, 175, 0.1) 100%);
-}
-
-.text-logofolio-blue {
-  color: #1e40af;
-}
 
 /* Font utility classes */
 .font-display {
@@ -66,14 +58,6 @@
   font-feature-settings: 'kern' 1;
 }
 
-/* Typography enhancements */
-.letter-spacing-wider {
-  letter-spacing: 0.25em;
-}
-
-.tracking-tighter {
-  letter-spacing: -0.05em;
-}
 
 /* Text shadow for better contrast */
 .text-shadow-soft {
@@ -98,238 +82,12 @@
 }
 
 
-/* Enhanced blur effects */
-.blur-soft {
-  filter: blur(60px);
-}
-
-.blur-ultra {
-  filter: blur(100px);
-}
-
-.blur-massive {
-  filter: blur(120px);
-}
-
-.blur-extreme {
-  filter: blur(150px);
-}
-
-/* Soft rounded shapes utilities */
-.shape-soft-ellipse {
-  clip-path: ellipse(45% 35% at 50% 50%);
-  border-radius: 40%;
-}
-
-.shape-organic-blob {
-  clip-path: ellipse(42% 38% at 55% 45%);
-  border-radius: 35%;
-}
-
-/* Abstract Background Animations */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-15px) rotate(2deg);
-  }
-}
-
-@keyframes morphing {
-  0%, 100% {
-    clip-path: ellipse(45% 35% at 50% 50%);
-    border-radius: 40%;
-  }
-  33% {
-    clip-path: ellipse(48% 32% at 52% 48%);
-    border-radius: 45%;
-  }
-  66% {
-    clip-path: ellipse(42% 38% at 48% 52%);
-    border-radius: 35%;
-  }
-}
-
-@keyframes drift {
-  0%, 100% {
-    transform: translateX(0px) translateY(0px) rotate(0deg);
-  }
-  25% {
-    transform: translateX(10px) translateY(-5px) rotate(1deg);
-  }
-  50% {
-    transform: translateX(-5px) translateY(-10px) rotate(-1deg);
-  }
-  75% {
-    transform: translateX(-10px) translateY(5px) rotate(2deg);
-  }
-}
-
-@keyframes pulse-glow {
-  0%, 100% {
-    opacity: 0.3;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.6;
-    transform: scale(1.05);
-  }
-}
-
-.animate-float {
-  animation: float 8s ease-in-out infinite;
-}
-
-.animate-morphing {
-  animation: morphing 12s ease-in-out infinite;
-}
-
-.animate-drift {
-  animation: drift 15s ease-in-out infinite;
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 6s ease-in-out infinite;
-}
-
-/* Available for Work Badge Styles */
-@keyframes badge-glow {
-  0%, 100% {
-    box-shadow: 0 0 5px rgba(34, 197, 94, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.5), 0 0 30px rgba(34, 197, 94, 0.3);
-  }
-}
-
-.badge-available {
-  animation: badge-glow 3s ease-in-out infinite;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-/* Enhanced gradient backgrounds */
-.gradient-orange-purple {
-  background: radial-gradient(circle at center, #f97316 0%, #8b5cf6 60%, transparent 100%);
-}
-
-.gradient-green-teal {
-  background: radial-gradient(circle at center, #10b981 0%, #06b6d4 70%, transparent 100%);
-}
-
-/* Get in Touch Pill Button Styles - Clean & Minimal */
-[data-get-in-touch] {
-  /* Removed conflicting styles - let Tailwind classes handle the styling */
-}
-
-[data-get-in-touch]:hover {
-  /* Removed conflicting hover styles - let GSAP handle animations */
-}
-
-[data-circle-bg] {
-  /* Handled by the style below */
-}
-
-[data-ripple] {
-  animation: none;
-}
-
-/* Pill button specific styles */
-.pill-button {
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
 /* Cream background enhancements */
 .bg-cream {
   background-color: var(--color-cream);
   position: relative;
 }
 
-/* Subtle gradient overlays for cream background */
-.cream-gradient-overlay {
-  background: 
-    radial-gradient(circle at 20% 80%, rgba(249, 115, 22, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.06) 0%, transparent 50%);
-}
-
-/* Abstract shapes responsive adjustments */
-@media (max-width: 768px) {
-  .abstract-shape-1 {
-    width: 400px !important;
-    height: 300px !important;
-  }
-  
-  .abstract-shape-2 {
-    width: 350px !important;
-    height: 250px !important;
-  }
-  
-  .abstract-shape-3 {
-    width: 300px !important;
-    height: 200px !important;
-  }
-}
-
-/* Enhanced background effects */
-.background-pattern {
-  background-image: 
-    radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
-}
-
-/* Text enhancements with background blur */
-.text-enhanced {
-  backdrop-filter: blur(1px);
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-}
-
-/* Custom scroll indicator */
-.scroll-indicator {
-  position: relative;
-  overflow: hidden;
-}
-
-.scroll-indicator::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 2px;
-  height: 20px;
-  background: rgba(0, 0, 0, 0.3);
-  animation: scroll-hint 2s ease-in-out infinite;
-}
-
-@keyframes scroll-hint {
-  0%, 100% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(0);
-  }
-  50% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(10px);
-  }
-}
-
-/* Lenis smooth scrolling base styles */
-html.lenis, html.lenis body {
-  height: auto;
-}
-
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
 
 /* Base palette */
 :root {
@@ -343,34 +101,8 @@ html.lenis, html.lenis body {
   background: #f4f3ed;
 }
 
-/* Main title styling */
-[data-hero-title] {
-  font-variation-settings: 'wght' 900;
-  letter-spacing: -0.02em;
-}
+/* (removed unused hero data-* selectors) */
 
-/* Hero info styling */
-[data-hero-info] h2 {
-  font-family: var(--font-super-joyful);
-  font-weight: 700;
-}
-
-[data-hero-info] p {
-  font-family: var(--font-super-joyful);
-  font-weight: 400;
-  letter-spacing: 0.01em;
-}
-
-/* Interactive elements */
-[data-hero-arrow], [data-hero-cursor] {
-  transition: transform 0.3s ease;
-}
-
-[data-hero-arrow]:hover, [data-hero-cursor]:hover {
-  transform: scale(1.1);
-}
-
-/* Get in Touch Circle */
 [data-get-in-touch] {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -382,70 +114,26 @@ html.lenis, html.lenis body {
   box-shadow: 0 8px 25px rgba(230, 126, 34, 0.2);
 }
 
-/* Circle background - using retro orange from palette */
 [data-circle-bg] {
   background: var(--color-retro-orange);
 }
 
-/* Ripple effect */
 [data-ripple] {
   pointer-events: none;
 }
 
-/* Star improvements */
-[data-star] {
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-}
+/* (removed unused star/orb/orbital selectors) */
 
-/* Gradient orb */
-[data-hero-orb] {
-  filter: blur(80px);
-}
-
-/* Orbital path */
-[data-orbital-dot] {
-  transform-origin: 50% 150px;
-}
-
-@media (min-width: 768px) {
-  [data-orbital-dot] {
-    transform-origin: 50% 200px;
-  }
-}
-
-/* Responsive typography */
-@media (max-width: 768px) {
-  [data-hero-title] {
-    font-size: 3.5rem;
-    line-height: 0.85;
-  }
-  
-  [data-hero-info] h2 {
-    font-size: 1.5rem;
-  }
-  
-  [data-hero-info] p {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  [data-hero-title] {
-    font-size: 2.5rem;
-    line-height: 0.9;
-  }
-}
+/* (removed unused responsive hero data-* rules) */
 
 /* Layout fixes */
 #hero .flex-1 {
   min-height: 0;
 }
 
-/* Smooth transforms */
-[data-hero-orb],
-[data-star],
-[data-hero-arrow],
-[data-hero-cursor],
-[data-orbital-dot] {
-  will-change: transform;
+/* (removed unused will-change for hero data-*) */
+
+/* First-visit page reveal (prevent FOUC by forcing overlay visible) */
+html.needs-reveal #page-transition-overlay {
+  transform: scaleY(1) !important;
 }

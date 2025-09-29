@@ -3,6 +3,7 @@ import "../styles/global.css";
 import CustomCursor from "@/components/ui/CustomCursor.astro";
 import bootAnimations from "@/scripts/boot-animations.ts?url";
 import smoothScroll from "@/scripts/boot-smooth-scroll.ts?url";
+import pageReveal from "@/scripts/boot-page-reveal.ts?url";
 import { SITE } from "@/config/site";
 
 interface Props {
@@ -50,7 +51,12 @@ const pageDesc = description ?? SITE.description;
       <div data-gsap-test class="h-3 w-3 rounded-full bg-emerald-400 shadow-[0_0_12px_#34d399]"></div>
     </div>
 
+    <script type="module" src={pageReveal}></script>
     <script type="module" src={smoothScroll}></script>
     <script type="module" src={bootAnimations}></script>
   </body>
+    <!-- Mark first-visit ASAP to avoid FOUC -->
+    <script>
+      try { if (!localStorage.getItem('hasVisited')) document.documentElement.classList.add('needs-reveal'); } catch (e) {}
+    </script>
 </html>
