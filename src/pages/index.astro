@@ -3,35 +3,347 @@ import SiteLayout from "@/layouts/SiteLayout.astro";
 ---
 
 <SiteLayout
-  title="Mohamad Al-Kahfi — Frontend Developer"
+  title="Kahfi Smith — Frontend Web Developer"
   description="Frontend developer focused on performance, accessibility, and serene UX."
 >
-  <main>
-    <section class="min-h-screen flex items-center justify-center">
-      <div class="text-start">
-        <h1
-          class="text-4xl md:text-8xl font-bold mb-4 px-4 font-editorial tracking-wide"
+  <main class="bg-cream text-charcoal min-h-screen relative overflow-hidden">
+    <!-- LogoFolio-inspired Hero Section -->
+    <section id="hero" class="relative min-h-screen">
+      <!-- Cream Background with Side Gradients -->
+      <div aria-hidden="true" class="absolute inset-0 -z-10">
+        <!-- Left side gradient - orange to pink -->
+        <div
+          class="absolute top-10 -left-32 w-[500px] h-[500px] rounded-full opacity-25 blur-[120px]"
+          style="background: radial-gradient(circle at center, #f97316 0%, #ec4899 60%, transparent 100%);"
         >
-          Portfolio of Mohamad Al-Kahfi
-        </h1>
-        <div class="flex max-w-7xl mx-auto flex-col md:flex-row items-start">
-          <h1
-            class="text-4xl md:text-6xl font-bold mb-4 px-4 font-editorial tracking-wide w-full"
+        </div>
+
+        <!-- Right side gradient - purple to teal -->
+        <div
+          class="absolute top-16 -right-32 w-[450px] h-[450px] rounded-full opacity-20 blur-[100px]"
+          style="background: radial-gradient(circle at center, #8b5cf6 0%, #06b6d4 70%, transparent 100%);"
+        >
+        </div>
+
+        <!-- Top right accent -->
+        <div
+          class="absolute top-10 right-10 w-[250px] h-[180px] rounded-full opacity-12 blur-[70px]"
+          style="background: radial-gradient(circle at center, #a855f7 0%, #3b82f6 75%, transparent 100%);"
+        >
+        </div>
+
+        <!-- Center-ish gradient - offset dari tengah -->
+        <div
+          class="absolute top-1/2 left-2/3 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[250px] rounded-full opacity-18 blur-[90px]"
+          style="background: radial-gradient(circle at center, #f59e0b 0%, #d946ef 65%, transparent 100%);"
+        >
+        </div>
+
+        <!-- Top center-left gradient -->
+        <div
+          class="absolute top-16 left-1/3 w-[280px] h-[220px] rounded-full opacity-14 blur-[75px]"
+          style="background: radial-gradient(circle at center, #06b6d4 0%, #8b5cf6 70%, transparent 100%);"
+        >
+        </div>
+      </div>
+
+      <div
+        class="relative z-10 h-screen flex flex-col justify-between pt-4 px-8 pb-8 md:pt-6 md:px-12 md:pb-12 max-w-7xl mx-auto"
+      >
+        <!-- Top Section -->
+        <div class="flex justify-between items-center">
+          <!-- Top Left - Tagline -->
+          <div
+            class="text-sm md:text-base text-charcoal/60 font-medium max-w-xs"
           >
-            Frontend Web developer
-          </h1>
-          <p
-            class="text-lg md:text-2xl mx-auto px-4 w-full"
-            data-animate="fade-in"
-            data-delay="0.3"
+            © Code by Kahfi Smith
+          </div>
+
+          <!-- Top Right - Get in Touch Pill -->
+          <div
+            data-get-in-touch
+            class="relative px-6 py-3 md:px-8 md:py-4 rounded-full flex items-center justify-center cursor-pointer group overflow-hidden bg-cream border-2 border-charcoal/40"
           >
-            Frontend developer focused on performance, accessibility, and serene
-            UX. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Fuga
-            facilis at doloribus esse eligendi officiis laudantium temporibus id
-            pariatur obcaecati?
-          </p>
+            <!-- Background color transition -->
+            <div
+              data-circle-bg
+              class="absolute inset-0 rounded-full"
+              style="transform: translateX(-100%);"
+            >
+            </div>
+
+            <!-- Text content -->
+            <div class="relative z-10 flex items-center gap-2">
+              <span
+                class="text-sm md:text-base font-medium text-charcoal group-hover:text-white transition-colors duration-300 font-sans whitespace-nowrap"
+              >
+                Get in Touch
+              </span>
+              <svg
+                class="w-4 h-4 text-charcoal group-hover:text-white transition-colors duration-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+              </svg>
+            </div>
+
+            <!-- Ripple effect -->
+            <div
+              data-ripple
+              class="absolute inset-0 rounded-full border-2 border-orange-400/50 scale-100 opacity-0"
+            >
+            </div>
+          </div>
+        </div>
+
+        <!-- Middle Section - Main Content -->
+        <div class="flex-1 flex items-center justify-center">
+          <!-- Center - Main Title -->
+          <div class="text-center">
+            <h1
+              class="text-[3rem] sm:text-[5rem] md:text-[10rem] lg:text-[14rem] xl:text-[18rem] font-medium leading-[0.75] text-charcoal mb-8 md:mb-12 font-display text-shadow-soft responsive-title tracking-thighter"
+            >
+              Portfolio
+            </h1>
+            <!-- Name positioned below main title -->
+            <div class="space-y-3 md:space-y-4">
+              <h2
+                class="text-2xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-light text-charcoal/85 font-display tracking-wide responsive-name"
+              >
+                Mohamad Al-Kahfi
+              </h2>
+              <p
+                class="text-sm sm:text-lg md:text-xl lg:text-2xl text-charcoal/70 font-mono font-medium uppercase tracking-[0.15em] md:tracking-[0.25em] responsive-job"
+              >
+                Frontend Web Developer
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Section -->
+        <div class="flex justify-center items-center">
+          <!-- Bottom Center - Navigation hint -->
+          <div class="text-center">
+            <div
+              class="text-xs md:text-sm text-charcoal/50 uppercase tracking-wider font-sans"
+            >
+              Scroll to explore
+            </div>
+            <div class="mt-2">
+              <svg
+                class="w-4 h-4 mx-auto text-charcoal/40 animate-bounce cursor-pointer hover:text-charcoal/60 transition-colors"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   </main>
 </SiteLayout>
+
+<!-- Projects Section -->
+<section class="min-h-screen py-20 px-8 md:px-12 bg-cream">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl md:text-6xl font-black text-charcoal mb-4">
+        Featured Projects
+      </h2>
+      <p class="text-lg text-charcoal/60 max-w-2xl mx-auto">
+        A collection of web applications and digital experiences I've crafted
+        with modern technologies.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Project cards will go here -->
+      <div
+        class="bg-white/80 backdrop-blur-sm rounded-lg p-6 shadow-sm hover:shadow-md hover:bg-white/90 transition-all duration-300"
+      >
+        <div
+          class="h-48 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg mb-4"
+        >
+        </div>
+        <h3 class="text-xl font-bold text-charcoal mb-2">Project One</h3>
+        <p class="text-charcoal/60 text-sm mb-4">
+          React • TypeScript • Tailwind CSS
+        </p>
+        <a
+          href="/works"
+          class="text-orange-600 hover:text-orange-800 text-sm font-medium"
+        >
+          View Project →
+        </a>
+      </div>
+
+      <div
+        class="bg-white/80 backdrop-blur-sm rounded-lg p-6 shadow-sm hover:shadow-md hover:bg-white/90 transition-all duration-300"
+      >
+        <div
+          class="h-48 bg-gradient-to-br from-green-500 to-teal-600 rounded-lg mb-4"
+        >
+        </div>
+        <h3 class="text-xl font-bold text-charcoal mb-2">Project Two</h3>
+        <p class="text-charcoal/60 text-sm mb-4">Next.js • Node.js • MongoDB</p>
+        <a
+          href="/works"
+          class="text-orange-600 hover:text-orange-800 text-sm font-medium"
+        >
+          View Project →
+        </a>
+      </div>
+
+      <div
+        class="bg-white/80 backdrop-blur-sm rounded-lg p-6 shadow-sm hover:shadow-md hover:bg-white/90 transition-all duration-300"
+      >
+        <div
+          class="h-48 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg mb-4"
+        >
+        </div>
+        <h3 class="text-xl font-bold text-charcoal mb-2">Project Three</h3>
+        <p class="text-charcoal/60 text-sm mb-4">
+          Vue.js • Express • PostgreSQL
+        </p>
+        <a
+          href="/works"
+          class="text-orange-600 hover:text-orange-800 text-sm font-medium"
+        >
+          View Project →
+        </a>
+      </div>
+    </div>
+
+    <div class="text-center mt-12">
+      <a
+        href="/works"
+        class="inline-flex items-center px-8 py-3 bg-charcoal text-cream hover:bg-charcoal/80 transition-colors rounded-lg font-medium"
+      >
+        View All Projects
+        <svg
+          class="ml-2 w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from "gsap";
+
+  document.addEventListener("DOMContentLoaded", () => {
+    // Hero section fade-in animation
+    const heroSection = document.getElementById("hero");
+    if (heroSection) {
+      gsap.fromTo(
+        heroSection,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
+      );
+    }
+
+    // Get in Touch pill animations
+    const getInTouchBtn = document.querySelector("[data-get-in-touch]");
+    const circleBackground = document.querySelector("[data-circle-bg]");
+    const ripple = document.querySelector("[data-ripple]");
+
+    if (getInTouchBtn && circleBackground && ripple) {
+      // Set initial position
+      gsap.set(circleBackground, { x: "-100%" });
+
+      // Very subtle floating animation
+      gsap.to(getInTouchBtn, {
+        y: -2,
+        duration: 4,
+        repeat: -1,
+        yoyo: true,
+        ease: "power2.inOut",
+      });
+
+      // Hover animations
+      getInTouchBtn.addEventListener("mouseenter", () => {
+        gsap.to(circleBackground, {
+          x: 0,
+          duration: 0.4,
+          ease: "power2.out",
+        });
+
+        gsap.to(getInTouchBtn, {
+          y: -3,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+
+        // Ripple effect
+        gsap.fromTo(
+          ripple,
+          { scale: 1, opacity: 0.5 },
+          { scale: 1.1, opacity: 0, duration: 0.6, ease: "power2.out" }
+        );
+      });
+
+      getInTouchBtn.addEventListener("mouseleave", () => {
+        gsap.to(circleBackground, {
+          x: "-100%",
+          duration: 0.4,
+          ease: "power2.out",
+        });
+
+        gsap.to(getInTouchBtn, {
+          y: -2,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      });
+
+      // Click effect
+      getInTouchBtn.addEventListener("click", () => {
+        gsap.fromTo(
+          getInTouchBtn,
+          { scale: 1 },
+          {
+            scale: 0.95,
+            duration: 0.1,
+            ease: "power2.out",
+            yoyo: true,
+            repeat: 1,
+          }
+        );
+      });
+    }
+
+    // Smooth scroll for scroll indicator
+    const scrollIndicator = document.querySelector(".animate-bounce");
+    if (scrollIndicator) {
+      scrollIndicator.addEventListener("click", () => {
+        window.scrollTo({
+          top: window.innerHeight,
+          behavior: "smooth",
+        });
+      });
+    }
+  });
+</script>
