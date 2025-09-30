@@ -3,7 +3,6 @@ export const SITE = {
   description:
     "Frontend web developer specializing in modern web technologies. Creating performant, accessible, and user-centric digital experiences.",
   ogImage: "/images/kahfi-og.png",
-  twitter: "@kahfismith",
   url: "https://kahfismith.dev",
 };
 

@@ -1,9 +1,15 @@
 ---
 import "../styles/global.css";
 import CustomCursor from "@/components/ui/CustomCursor.astro";
+// Choose one of these loaders:
+// import CurtainLoader from "@/components/ui/CurtainLoader.astro";          // With progress bar
+import SimpleCurtainLoader from "@/components/ui/SimpleCurtainLoader.astro";  // Just brand name
 import bootAnimations from "@/scripts/boot-animations.ts?url";
 import smoothScroll from "@/scripts/boot-smooth-scroll.ts?url";
 import pageReveal from "@/scripts/boot-page-reveal.ts?url";
+// Choose corresponding script:
+// import bootCurtainLoader from "@/scripts/boot-curtain-loader.ts?url";     // For CurtainLoader
+import bootSimpleCurtainLoader from "@/scripts/boot-simple-curtain-loader.ts?url";  // For SimpleCurtainLoader
 import { SITE } from "@/config/site";
 
 interface Props {
@@ -40,17 +46,18 @@ const pageDesc = description ?? SITE.description;
     <meta name="twitter:image" content={SITE.ogImage} />
   </head>
   <body class="bg-cream text-charcoal antialiased min-h-screen">
+    <!-- Choose one loader: -->
+    <!-- <CurtainLoader /> -->
+    <SimpleCurtainLoader />
     <CustomCursor />
     <div id="page-transition-overlay" class="fixed inset-0 z-50 bg-neutral-950 pointer-events-none transform scale-y-0 origin-top"></div>
     <noscript><style>#page-transition-overlay{display:none !important}</style></noscript>
 
     <slot />
 
-    <div class="fixed bottom-4 right-4 z-50 flex items-center gap-2" aria-hidden="true">
-      <span class="text-xs text-neutral-400">GSAP</span>
-      <div data-gsap-test class="h-3 w-3 rounded-full bg-emerald-400 shadow-[0_0_12px_#34d399]"></div>
-    </div>
-
+    <!-- Choose corresponding script: -->
+    <!-- <script type="module" src={bootCurtainLoader}></script> -->
+    <script type="module" src={bootSimpleCurtainLoader}></script>
     <script type="module" src={pageReveal}></script>
     <script type="module" src={smoothScroll}></script>
     <script type="module" src={bootAnimations}></script>
@@ -60,3 +67,22 @@ const pageDesc = description ?? SITE.description;
       try { if (!localStorage.getItem('hasVisited')) document.documentElement.classList.add('needs-reveal'); } catch (e) {}
     </script>
 </html>
+    <!-- Mark first-visit ASAP to avoid FOUC -->
+    <script>
+      try {
+        if (!localStorage.getItem('hasVisited')) {
+          document.documentElement.classList.add('needs-reveal');
+        }
+      } catch (e) {}
+    </script>
+
+    <!-- Critical loader CSS to avoid cream flash before Tailwind loads -->
+    <style>
+      /* Ensure loader covers viewport immediately */
+      #simple-curtain-loader{position:fixed;inset:0;z-index:9999;background:#0b0b0b;opacity:1}
+      #simple-curtain-loader .curtain-top,#simple-curtain-loader .curtain-bottom{position:absolute;left:0;width:100%;height:50vh}
+      #simple-curtain-loader .curtain-top{top:0;background:linear-gradient(to bottom,#0a0a0a,#111,#1a1a1a)}
+      #simple-curtain-loader .curtain-bottom{bottom:0;background:linear-gradient(to top,#0a0a0a,#111,#1a1a1a)}
+      /* Avoid background flash on first visit */
+      html.needs-reveal body{background:#0b0b0b !important}
+    </style>
