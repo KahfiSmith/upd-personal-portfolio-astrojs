@@ -41,7 +41,6 @@
   --font-mono: "Space Grotesk", ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
 }
 
-
 /* Font utility classes */
 .font-display {
   font-family: var(--font-display);
@@ -58,6 +57,9 @@
   font-feature-settings: 'kern' 1;
 }
 
+body::-webkit-scrollbar {
+  width: 0.1em;
+}
 
 /* Text shadow for better contrast */
 .text-shadow-soft {
@@ -81,13 +83,11 @@
   }
 }
 
-
 /* Cream background enhancements */
 .bg-cream {
   background-color: var(--color-cream);
   position: relative;
 }
-
 
 /* Base palette */
 :root {
@@ -101,7 +101,6 @@
   background: #f4f3ed;
 }
 
-/* (removed unused hero data-* selectors) */
 
 [data-get-in-touch] {
   backdrop-filter: blur(10px);
@@ -122,18 +121,74 @@
   pointer-events: none;
 }
 
-/* (removed unused star/orb/orbital selectors) */
-
-/* (removed unused responsive hero data-* rules) */
-
 /* Layout fixes */
 #hero .flex-1 {
   min-height: 0;
 }
 
-/* (removed unused will-change for hero data-*) */
-
 /* First-visit page reveal (prevent FOUC by forcing overlay visible) */
 html.needs-reveal #page-transition-overlay {
   transform: scaleY(1) !important;
+}
+
+/* Curtain Loader Styles */
+#curtain-loader {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Curtain panels */
+.curtain-top,
+.curtain-bottom {
+  will-change: transform;
+  backface-visibility: hidden;
+  contain: layout style paint;
+}
+
+/* Brand elements */
+.brand-letter {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+/* Progress elements */
+.progress-fill {
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.dot {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+/* Decorative shapes */
+.deco-shape {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+/* Body overflow control during loading */
+body.overflow-hidden {
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* Performance optimizations for curtain loader */
+#curtain-loader * {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .deco-shape {
+    animation: none !important;
+  }
+  
+  #curtain-loader * {
+    transition-duration: 0.2s !important;
+    animation-duration: 0.2s !important;
+  }
 }
