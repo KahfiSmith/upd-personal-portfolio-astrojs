@@ -17,6 +17,9 @@ class SimpleCurtainLoaderAnimation {
   private elements: SimpleLoaderElements;
   private timeline: gsap.core.Timeline;
   private isFirstVisit: boolean;
+  // Delay antara progress 100% dan mulai buka tirai (detik)
+  private curtainOpenDelay: number = 0.35;
+  private exitStarted: boolean = false;
 
   constructor() {
     this.isFirstVisit = !localStorage.getItem('hasVisited');
@@ -50,10 +53,7 @@ class SimpleCurtainLoaderAnimation {
     // Start entrance animation
     this.animateEntrance();
     
-    // Wait for content load, then exit
-    this.waitForContentLoad().then(() => {
-      this.animateExit();
-    });
+    // Exit akan dipicu saat progress mencapai 100% (lihat onComplete di animateProgress)
   }
 
   private setInitialStates(): void {
@@ -158,6 +158,13 @@ class SimpleCurtainLoaderAnimation {
         if (this.elements.progressNumber) {
           this.elements.progressNumber.textContent = currentProgress.toString();
         }
+      },
+      onComplete: () => {
+        if (!this.exitStarted) {
+          const delayMs = Math.max(0, this.curtainOpenDelay) * 1000;
+          if (delayMs > 0) setTimeout(() => this.animateExit(), delayMs);
+          else this.animateExit();
+        }
       }
     });
   }
@@ -192,6 +199,8 @@ class SimpleCurtainLoaderAnimation {
   }
 
   private animateExit(): void {
+    if (this.exitStarted) return;
+    this.exitStarted = true;
     const exitTimeline = gsap.timeline({
       onComplete: () => {
         // Mark as visited and cleanup
@@ -206,64 +215,36 @@ class SimpleCurtainLoaderAnimation {
     });
 
     exitTimeline
-      // Wait a moment to appreciate the brand
-      .to({}, { duration: 0.6 })
-      
-      // Animate brand and progress out completely FIRST
+      .add('openNow')
+      // Fade brand/progress quickly
       .to([this.elements.brandName, this.elements.brandSubtitle, this.elements.progressContainer], {
         opacity: 0,
-        y: -30,
-        duration: 0.8,
+        y: -16,
+        duration: 0.35,
         ease: "power2.in",
-        stagger: 0.1
-      })
-      
-      // Fade out floating orb
+        stagger: 0.05
+      }, 'openNow')
+      // Fade orb
       .to(this.elements.floatingOrb, {
         opacity: 0,
         scale: 0.5,
-        duration: 0.5,
-        ease: "power2.in"
-      }, "-=0.4")
-
-      // Also fade decorative background to avoid any tint
-      .to(this.elements.decorativeBg, {
-        opacity: 0,
         duration: 0.3,
         ease: "power2.in"
-      }, "-=0.2")
-      
-      // Wait to ensure everything is hidden
-      .to({}, { duration: 0.4 })
-      
-      // Before opening curtains, make loader background transparent and release body bg
-      .call(() => {
-        try { document.documentElement.classList.remove('loader-active'); } catch (e) {}
-      })
-      .to(this.elements.loader, {
-        backgroundColor: 'rgba(0,0,0,0)',
-        duration: 0.2,
-        ease: 'none'
-      })
-
-      // NOW open the curtains
-      .to(this.elements.curtainTop, {
-        y: '-100%',
-        duration: 1.2,
-        ease: "power3.inOut"
-      })
-      .to(this.elements.curtainBottom, {
-        y: '100%',
-        duration: 1.2,
-        ease: "power3.inOut"
-      }, "-=1.2")
-      
-      // Final cleanup
-      .to(this.elements.loader, {
+      }, 'openNow')
+      // Fade decorative background
+      .to(this.elements.decorativeBg, {
         opacity: 0,
-        duration: 0.2,
-        ease: "power2.inOut"
-      }, "-=0.3");
+        duration: 0.25,
+        ease: "power2.in"
+      }, 'openNow')
+      // Release body bg and make loader bg transparent immediately
+      .call(() => { try { document.documentElement.classList.remove('loader-active'); } catch (e) {} }, [], 'openNow')
+      .to(this.elements.loader, { backgroundColor: 'rgba(0,0,0,0)', duration: 0.01, ease: 'none' }, 'openNow')
+      // Open curtains immediately
+      .to(this.elements.curtainTop, { y: '-100%', duration: 1.25, ease: "power3.inOut" }, 'openNow')
+      .to(this.elements.curtainBottom, { y: '100%', duration: 1.25, ease: "power3.inOut" }, 'openNow')
+      // Final cleanup
+      .to(this.elements.loader, { opacity: 0, duration: 0.1, ease: "power2.inOut" }, 'openNow+=0.85');
   }
 }
 
