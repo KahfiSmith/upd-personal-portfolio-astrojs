@@ -7,6 +7,7 @@ interface SimpleLoaderElements {
   brandName: HTMLElement;
   brandSubtitle: HTMLElement;
   floatingOrb: HTMLElement;
+  decorativeBg: HTMLElement;
   progressContainer: HTMLElement;
   progressBar: HTMLElement;
   progressNumber: HTMLElement;
@@ -35,6 +36,7 @@ class SimpleCurtainLoaderAnimation {
       brandName: document.querySelector('.brand-name') as HTMLElement,
       brandSubtitle: document.querySelector('.brand-subtitle') as HTMLElement,
       floatingOrb: document.querySelector('.floating-orb') as HTMLElement,
+      decorativeBg: document.querySelector('.decorative-bg') as HTMLElement,
       progressContainer: document.querySelector('.progress-container') as HTMLElement,
       progressBar: document.querySelector('.progress-bar') as HTMLElement,
       progressNumber: document.querySelector('.progress-number') as HTMLElement,
@@ -195,7 +197,10 @@ class SimpleCurtainLoaderAnimation {
         // Mark as visited and cleanup
         localStorage.setItem('hasVisited', 'true');
         document.body.classList.remove('overflow-hidden');
-        try { document.documentElement.classList.remove('needs-reveal'); } catch (e) {}
+        try {
+          document.documentElement.classList.remove('needs-reveal');
+          document.documentElement.classList.remove('loader-active');
+        } catch (e) {}
         this.elements.loader.remove();
       }
     });
@@ -220,10 +225,27 @@ class SimpleCurtainLoaderAnimation {
         duration: 0.5,
         ease: "power2.in"
       }, "-=0.4")
+
+      // Also fade decorative background to avoid any tint
+      .to(this.elements.decorativeBg, {
+        opacity: 0,
+        duration: 0.3,
+        ease: "power2.in"
+      }, "-=0.2")
       
       // Wait to ensure everything is hidden
       .to({}, { duration: 0.4 })
       
+      // Before opening curtains, make loader background transparent and release body bg
+      .call(() => {
+        try { document.documentElement.classList.remove('loader-active'); } catch (e) {}
+      })
+      .to(this.elements.loader, {
+        backgroundColor: 'rgba(0,0,0,0)',
+        duration: 0.2,
+        ease: 'none'
+      })
+
       // NOW open the curtains
       .to(this.elements.curtainTop, {
         y: '-100%',
