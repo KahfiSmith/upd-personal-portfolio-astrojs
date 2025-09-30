@@ -97,13 +97,13 @@ export function initAnimations(opts: InitOptions = {}): void {
     });
   }
 
-  // Index page: Scroll down by one screen when clicking indicator
-  const scrollNext = document.querySelector<HTMLElement>("[data-scroll-next]");
-  if (scrollNext) {
-    scrollNext.addEventListener("click", () => {
-      window.scrollTo({ top: window.innerHeight, behavior: prefersReduced ? "auto" : "smooth" });
-    });
-  }
+  // Index page: Scroll down by one screen when clicking indicator - DISABLED
+  // const scrollNext = document.querySelector<HTMLElement>("[data-scroll-next]");
+  // if (scrollNext) {
+  //   scrollNext.addEventListener("click", () => {
+  //     window.scrollTo({ top: window.innerHeight, behavior: prefersReduced ? "auto" : "smooth" });
+  //   });
+  // }
 }
 
 export function teardownAnimations(): void {

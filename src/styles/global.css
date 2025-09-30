@@ -3,8 +3,8 @@
 /* Local Fonts Import */
 @font-face {
   font-family: 'Inter';
-  src: url('/fonts/Inter-VariableFont_opsz%2Cwght.ttf') format('truetype'),
-       url('/fonts/Inter-VariableFont_opsz%2Cwght.ttf') format('truetype-variations');
+  src: url('/fonts/Inter-VariableFont_opsz,wght.ttf') format('truetype'),
+       url('/fonts/Inter-VariableFont_opsz,wght.ttf') format('truetype-variations');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
@@ -191,4 +191,91 @@ body.overflow-hidden {
     transition-duration: 0.2s !important;
     animation-duration: 0.2s !important;
   }
+}
+
+/* Hide cursor arrow in hero section specifically */
+#hero, #hero * {
+  cursor: none !important;
+}
+
+/* Force hide any browser default cursor arrows */
+body, html {
+  cursor: none !important;
+}
+
+/* Prevent any arrow cursor from appearing */
+* {
+  cursor: none !important;
+}
+
+/* Hide any scroll indicators, back-to-top arrows, or navigation arrows */
+[data-scroll-next],
+[data-scroll-indicator],
+[data-back-to-top],
+.scroll-indicator,
+.back-to-top,
+.scroll-arrow,
+.up-arrow,
+.down-arrow,
+*[class*="scroll"],
+*[class*="arrow"],
+*[id*="scroll"],
+*[id*="arrow"] {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Block any pseudo-elements that might create arrows */
+*::before,
+*::after {
+  content: none !important;
+}
+
+/* Force override any arrow content */
+* {
+  content: none !important;
+}
+
+/* Block any possible scroll or navigation indicators from appearing */
+html, body {
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE and Edge */
+  overflow-x: hidden !important;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Block any floating action buttons or indicators */
+.fab,
+.floating-action-button,
+.scroll-to-top,
+.back-to-top-button,
+*[role="button"][aria-label*="scroll"],
+*[role="button"][aria-label*="top"],
+*[role="button"][aria-label*="up"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Force hide any positioned arrows or indicators */
+[style*="position: fixed"],
+[style*="position: absolute"] {
+  cursor: none !important;
+}
+
+/* Specifically target common scroll indicator patterns */
+div[class*="scroll"]:not([class*="loader"]):not([class*="container"]),
+div[id*="scroll"]:not([id*="loader"]):not([id*="container"]),
+button[class*="scroll"],
+button[id*="scroll"],
+a[class*="scroll"],
+a[id*="scroll"] {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
 }
