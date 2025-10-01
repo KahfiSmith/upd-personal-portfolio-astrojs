@@ -28,6 +28,13 @@
   font-display: swap;
 }
 
+/* Prevent pull-to-refresh/overscroll at top, but allow scrolling */
+html,
+body {
+  height: 100%;
+  overscroll-behavior-y: none;
+}
+
 /* Tailwind v4 theme tokens */
 @theme {
   --color-charcoal: #171717;

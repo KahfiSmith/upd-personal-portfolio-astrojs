@@ -11,6 +11,7 @@ import pageReveal from "@/scripts/boot-page-reveal.ts?url";
 // import bootCurtainLoader from "@/scripts/boot-curtain-loader.ts?url";     // For CurtainLoader
 import bootSimpleCurtainLoader from "@/scripts/boot-simple-curtain-loader.ts?url";  // For SimpleCurtainLoader
 import { SITE } from "@/config/site";
+import disableTopPull from "@/scripts/disable-top-pull.ts?url";
 
 interface Props {
   title?: string;
@@ -56,11 +57,11 @@ const pageDesc = description ?? SITE.description;
     <slot />
 
     <!-- Choose corresponding script: -->
-    <!-- <script type="module" src={bootCurtainLoader}></script> -->
     <script type="module" src={bootSimpleCurtainLoader}></script>
     <script type="module" src={pageReveal}></script>
     <script type="module" src={smoothScroll}></script>
     <script type="module" src={bootAnimations}></script>
+    <script type="module" src={disableTopPull}></script>
   </body>
     <!-- Mark first-visit ASAP to avoid FOUC -->
     <script>
