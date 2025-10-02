@@ -2,7 +2,25 @@
 import cursorScript from "@/scripts/boot-custom-cursor.ts?url";
 ---
 
-<!-- Odama.io style custom cursor - Single white dot with mix-blend-mode -->
+<!-- 
+  Custom cursor with enhanced visibility on all backgrounds
+  
+  Usage:
+  1. Add this component to your layout
+  2. For dark background elements where cursor might need special styling, add one of these classes:
+     - data-dark-bg
+     - .dark-bg
+     - .bg-dark
+     - .bg-black
+  3. For light/white background elements where cursor might need special styling, add one of these classes:
+     - data-light-bg
+     - .light-bg
+     - .bg-light
+     - .bg-white
+  
+  Example: <div class="bg-dark">Dark content with special cursor</div>
+          <div class="bg-light">Light content with special cursor</div>
+-->
 <div id="custom-cursor" aria-hidden="true">
   <div class="cursor-dot"></div>
   
@@ -35,7 +53,7 @@ import cursorScript from "@/scripts/boot-custom-cursor.ts?url";
       left: 0;
       width: 18px;
       height: 18px;
-      background-color: #000000;
+      background-color: rgba(51, 51, 51, 0.5); /* Semi-transparent background */
       border-radius: 50%;
       pointer-events: none;
       mix-blend-mode: difference;
@@ -44,11 +62,29 @@ import cursorScript from "@/scripts/boot-custom-cursor.ts?url";
       opacity: 0;
       will-change: transform, opacity;
       backface-visibility: hidden;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4), 0 0 0 2px rgba(0, 0, 0, 0.15), 0 0 10px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(1px); /* Subtle blur effect */
     }
     
     /* Smooth scaling animation */
     .cursor-dot {
       transform-origin: center center;
+    }
+    
+    /* Special styling for dark backgrounds */
+    .cursor-dot.on-dark-element {
+      background-color: rgba(204, 204, 204, 0.6); /* Semi-transparent light gray */
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5), 0 0 0 2px rgba(0, 0, 0, 0.2), 0 0 12px rgba(255, 255, 255, 0.4);
+      mix-blend-mode: screen; /* Better for dark backgrounds */
+      backdrop-filter: blur(2px);
+    }
+    
+    /* Special styling for light/white backgrounds */
+    .cursor-dot.on-light-element {
+      background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent black */
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(255, 255, 255, 0.3), 0 0 12px rgba(0, 0, 0, 0.3);
+      mix-blend-mode: multiply; /* Better for light backgrounds */
+      backdrop-filter: blur(2px);
     }
   </style>
 </div>

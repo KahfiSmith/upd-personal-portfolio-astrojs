@@ -110,6 +110,22 @@ export function initCustomCursor(): void {
     "[data-cursor]",
     ".cursor-hover",
   ].join(",");
+  
+  // Elements where cursor might need special handling due to dark background
+  const darkElementSelector = [
+    "[data-dark-bg]",
+    ".dark-bg",
+    ".bg-dark",
+    ".bg-black",
+  ].join(",");
+  
+  // Elements where cursor might need special handling due to light background
+  const lightElementSelector = [
+    "[data-light-bg]",
+    ".light-bg",
+    ".bg-light",
+    ".bg-white",
+  ].join(",");
 
   const onMouseEnter = () => {
     isHovering = true;
@@ -122,11 +138,44 @@ export function initCustomCursor(): void {
     hoverScale = 1;
     cursor.style.transition = "transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
   };
+  
+  // Handle dark background elements
+  const onDarkElementEnter = () => {
+    cursor.classList.add("on-dark-element");
+    cursor.classList.remove("on-light-element");
+  };
+
+  const onDarkElementLeave = () => {
+    cursor.classList.remove("on-dark-element");
+  };
+  
+  // Handle light background elements
+  const onLightElementEnter = () => {
+    cursor.classList.add("on-light-element");
+    cursor.classList.remove("on-dark-element");
+  };
+
+  const onLightElementLeave = () => {
+    cursor.classList.remove("on-light-element");
+  };
 
   const attachHoverListeners = () => {
+    // Interactive element hover effects
     document.querySelectorAll<HTMLElement>(hoverSelector).forEach((el) => {
       el.addEventListener("mouseenter", onMouseEnter);
       el.addEventListener("mouseleave", onMouseLeave);
+    });
+    
+    // Dark background element special handling
+    document.querySelectorAll<HTMLElement>(darkElementSelector).forEach((el) => {
+      el.addEventListener("mouseenter", onDarkElementEnter);
+      el.addEventListener("mouseleave", onDarkElementLeave);
+    });
+    
+    // Light background element special handling
+    document.querySelectorAll<HTMLElement>(lightElementSelector).forEach((el) => {
+      el.addEventListener("mouseenter", onLightElementEnter);
+      el.addEventListener("mouseleave", onLightElementLeave);
     });
   };
 
