@@ -1,16 +1,21 @@
 ---
 import SiteLayout from "@/layouts/SiteLayout.astro";
+import { dataSkills } from "@/data/skills";
+import skillsMarquee from "@/scripts/skills-marquee-gsap.ts?url";
 ---
 
 <SiteLayout
   title="Kahfi Smith — Frontend Web Developer"
   description="Frontend developer focused on performance, accessibility, and serene UX."
 >
-  <main class="bg-cream text-charcoal min-h-screen relative overflow-hidden">
+  <main class="min-h-screen relative overflow-hidden pt-6">
     <!-- LogoFolio-inspired Hero Section -->
-    <section id="hero" class="relative min-h-screen" style="cursor: none !important;">
-
-      <!--
+    <section
+      id="hero"
+      class="relative min-h-screen"
+      style="cursor: none !important;"
+    >
+      
       <div aria-hidden="true" class="absolute inset-0 -z-10">
         <div
           class="absolute top-10 -left-32 w-[300px] h-[300px] rounded-full opacity-25 blur-[120px]"
@@ -37,11 +42,10 @@ import SiteLayout from "@/layouts/SiteLayout.astro";
           style="background: radial-gradient(circle at center, #06b6d4 0%, #8b5cf6 70%, transparent 100%);"
         ></div>
       </div>
-      -->
+     
 
       <div
-        class="relative z-10 h-screen flex flex-col justify-between pt-2 px-8 pb-8 md:pt-4 md:px-12 md:pb-12 max-w-7xl mx-auto"
-      >
+        class="relative z-10 h-screen flex flex-col justify-between pt-2 px-8 pb-8 md:pt-4 md:pb-12 max-w-7xl mx-auto">
         <!-- Top Section -->
         <div class="flex justify-between items-center">
           <!-- Top Left - Tagline -->
@@ -108,99 +112,134 @@ import SiteLayout from "@/layouts/SiteLayout.astro";
         </div>
       </div>
     </section>
+    
+
+    <!-- Skills Section (2-row scroll-reactive marquee) -->
+    <section class="my-12 md:my-20">
+      <div class="space-y-2">
+        <!-- Top marquee block (black) -->
+        <div class="w-full bg-charcoal text-cream px-6 py-6 md:px-10 md:py-8 overflow-hidden shadow-lg ring-1 ring-white/10">
+          <div class="relative select-none">
+            <div data-skills-row="1" class="flex gap-8 whitespace-nowrap will-change-transform py-2">
+              {Array.from({ length: 3 }).map(() => (
+                dataSkills.map((s) => (
+                  <img src={s.imgSrc} alt={s.label} class="shrink-0 w-12 h-12 opacity-90 hover:opacity-100 transition-opacity" loading="lazy" />
+                ))
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom marquee block (black) -->
+        <div class="w-full bg-charcoal text-cream px-6 py-6 md:px-10 md:py-8 overflow-hidden shadow-lg ring-1 ring-white/10">
+          <div class="relative select-none">
+            <div data-skills-row="2" class="flex gap-8 whitespace-nowrap will-change-transform py-2">
+              {Array.from({ length: 3 }).map(() => (
+                [...dataSkills].reverse().map((s) => (
+                  <img src={s.imgSrc} alt={s.label} class="shrink-0 w-12 h-12 opacity-90 hover:opacity-100 transition-opacity" loading="lazy" />
+                ))
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      <script type="module" src={skillsMarquee}></script>
+    </section>
+
+    <!-- Projects Section -->
+    <section class="py-20 px-8 md:px-12 bg-cream">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl md:text-6xl font-black text-charcoal mb-4">
+            Featured Projects
+          </h2>
+          <p class="text-lg text-charcoal/60 max-w-2xl mx-auto">
+            A collection of web applications and digital experiences I've
+            crafted with modern technologies.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Project cards will go here -->
+          <div
+            class="bg-white/80 backdrop-blur-sm rounded-lg p-6 shadow-sm hover:shadow-md hover:bg-white/90 transition-all duration-300"
+          >
+            <div
+              class="h-48 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg mb-4"
+            >
+            </div>
+            <h3 class="text-xl font-bold text-charcoal mb-2">Project One</h3>
+            <p class="text-charcoal/60 text-sm mb-4">
+              React • TypeScript • Tailwind CSS
+            </p>
+            <a
+              href="/works"
+              class="text-orange-600 hover:text-orange-800 text-sm font-medium"
+            >
+              View Project →
+            </a>
+          </div>
+
+          <div
+            class="bg-white/80 backdrop-blur-sm rounded-lg p-6 shadow-sm hover:shadow-md hover:bg-white/90 transition-all duration-300"
+          >
+            <div
+              class="h-48 bg-gradient-to-br from-green-500 to-teal-600 rounded-lg mb-4"
+            >
+            </div>
+            <h3 class="text-xl font-bold text-charcoal mb-2">Project Two</h3>
+            <p class="text-charcoal/60 text-sm mb-4">
+              Next.js • Node.js • MongoDB
+            </p>
+            <a
+              href="/works"
+              class="text-orange-600 hover:text-orange-800 text-sm font-medium"
+            >
+              View Project →
+            </a>
+          </div>
+
+          <div
+            class="bg-white/80 backdrop-blur-sm rounded-lg p-6 shadow-sm hover:shadow-md hover:bg-white/90 transition-all duration-300"
+          >
+            <div
+              class="h-48 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg mb-4"
+            >
+            </div>
+            <h3 class="text-xl font-bold text-charcoal mb-2">Project Three</h3>
+            <p class="text-charcoal/60 text-sm mb-4">
+              Vue.js • Express • PostgreSQL
+            </p>
+            <a
+              href="/works"
+              class="text-orange-600 hover:text-orange-800 text-sm font-medium"
+            >
+              View Project →
+            </a>
+          </div>
+        </div>
+
+        <div class="text-center mt-12">
+          <a
+            href="/works"
+            class="inline-flex items-center px-8 py-3 bg-charcoal text-cream hover:bg-charcoal/80 transition-colors rounded-lg font-medium"
+          >
+            View All Projects
+            <svg
+              class="ml-2 w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
   </main>
 </SiteLayout>
-
-<!-- Projects Section -->
-<section class="min-h-screen py-20 px-8 md:px-12 bg-cream">
-  <div class="max-w-7xl mx-auto">
-    <div class="text-center mb-16">
-      <h2 class="text-4xl md:text-6xl font-black text-charcoal mb-4">
-        Featured Projects
-      </h2>
-      <p class="text-lg text-charcoal/60 max-w-2xl mx-auto">
-        A collection of web applications and digital experiences I've crafted
-        with modern technologies.
-      </p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <!-- Project cards will go here -->
-      <div
-        class="bg-white/80 backdrop-blur-sm rounded-lg p-6 shadow-sm hover:shadow-md hover:bg-white/90 transition-all duration-300"
-      >
-        <div
-          class="h-48 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg mb-4"
-        >
-        </div>
-        <h3 class="text-xl font-bold text-charcoal mb-2">Project One</h3>
-        <p class="text-charcoal/60 text-sm mb-4">
-          React • TypeScript • Tailwind CSS
-        </p>
-        <a
-          href="/works"
-          class="text-orange-600 hover:text-orange-800 text-sm font-medium"
-        >
-          View Project →
-        </a>
-      </div>
-
-      <div
-        class="bg-white/80 backdrop-blur-sm rounded-lg p-6 shadow-sm hover:shadow-md hover:bg-white/90 transition-all duration-300"
-      >
-        <div
-          class="h-48 bg-gradient-to-br from-green-500 to-teal-600 rounded-lg mb-4"
-        >
-        </div>
-        <h3 class="text-xl font-bold text-charcoal mb-2">Project Two</h3>
-        <p class="text-charcoal/60 text-sm mb-4">Next.js • Node.js • MongoDB</p>
-        <a
-          href="/works"
-          class="text-orange-600 hover:text-orange-800 text-sm font-medium"
-        >
-          View Project →
-        </a>
-      </div>
-
-      <div
-        class="bg-white/80 backdrop-blur-sm rounded-lg p-6 shadow-sm hover:shadow-md hover:bg-white/90 transition-all duration-300"
-      >
-        <div
-          class="h-48 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg mb-4"
-        >
-        </div>
-        <h3 class="text-xl font-bold text-charcoal mb-2">Project Three</h3>
-        <p class="text-charcoal/60 text-sm mb-4">
-          Vue.js • Express • PostgreSQL
-        </p>
-        <a
-          href="/works"
-          class="text-orange-600 hover:text-orange-800 text-sm font-medium"
-        >
-          View Project →
-        </a>
-      </div>
-    </div>
-
-    <div class="text-center mt-12">
-      <a
-        href="/works"
-        class="inline-flex items-center px-8 py-3 bg-charcoal text-cream hover:bg-charcoal/80 transition-colors rounded-lg font-medium"
-      >
-        View All Projects
-        <svg
-          class="ml-2 w-4 h-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-        </svg>
-      </a>
-    </div>
-  </div>
-</section>
