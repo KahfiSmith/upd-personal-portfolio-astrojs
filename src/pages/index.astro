@@ -2,6 +2,7 @@
 import SiteLayout from "@/layouts/SiteLayout.astro";
 import { dataSkills } from "@/data/skills";
 import skillsMarquee from "@/scripts/skills-marquee-gsap.ts?url";
+import getInTouchAnim from "@/scripts/get-in-touch-anim.ts?url";
 ---
 
 <SiteLayout
@@ -64,14 +65,13 @@ import skillsMarquee from "@/scripts/skills-marquee-gsap.ts?url";
             <div
               data-circle-bg
               class="absolute inset-0 rounded-full"
-              style="transform: translateX(-100%);"
             >
             </div>
 
             <!-- Text content -->
             <div class="relative z-10 flex items-center gap-2">
               <span
-                class="text-sm md:text-base font-medium text-charcoal group-hover:text-white transition-colors duration-300 font-sans whitespace-nowrap"
+                class="text-sm md:text-base font-medium text-charcoal/60 transition-colors duration-300 font-sans whitespace-nowrap"
               >
                 Get in Touch
               </span>
@@ -80,7 +80,7 @@ import skillsMarquee from "@/scripts/skills-marquee-gsap.ts?url";
             <!-- Ripple effect -->
             <div
               data-ripple
-              class="absolute inset-0 rounded-full border-2 border-orange-400/50 scale-100 opacity-0"
+              class="absolute inset-0 rounded-full border-2 border-charcoal/50 scale-100 opacity-0"
             >
             </div>
           </div>
@@ -144,7 +144,9 @@ import skillsMarquee from "@/scripts/skills-marquee-gsap.ts?url";
         </div>
       </div>
       <script type="module" src={skillsMarquee}></script>
+      <script type="module" src={getInTouchAnim}></script>
     </section>
+
 
   </main>
 </SiteLayout>

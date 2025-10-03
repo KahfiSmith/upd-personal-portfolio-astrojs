@@ -39,8 +39,8 @@ function boot() {
   let offset2 = -w2;
   let lastTime = performance.now();
   // Base speed (px/s) — identical for both rows
-  let speed1 = 50; // top row
-  let speed2 = 50; // bottom row
+  let speed1 = 60; // top row
+  let speed2 = 60; // bottom row
 
   function tick() {
     const now = performance.now();

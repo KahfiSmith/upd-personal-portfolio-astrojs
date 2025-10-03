@@ -116,17 +116,31 @@ body::-webkit-scrollbar {
 }
 
 [data-get-in-touch]:hover {
-  border-color: rgba(230, 126, 34, 0.4);
-  box-shadow: 0 8px 25px rgba(230, 126, 34, 0.2);
+  /* Force ring to solid charcoal on hover and keep drop shadow */
+  box-shadow: 0 0 0 2px var(--color-charcoal), 0 8px 25px rgba(23, 23, 23, 0.15);
 }
 
 [data-circle-bg] {
-  background: var(--color-retro-orange);
+  background: var(--color-charcoal);
+  /* Slight bleed to avoid any inner edge seam at high zoom */
+  inset: -1px;
+  border-radius: 9999px;
+  /* Default hidden to avoid flash until JS enables animation */
+  transform: translateX(-100%);
+  opacity: 0;
+  transition: none;
 }
 
 [data-ripple] {
   pointer-events: none;
 }
+
+/* Persisted fill keeps text readable */
+[data-get-in-touch].is-active span {
+  color: #fff !important;
+}
+
+/* Keep text readable when liquid fill persists */
 
 /* Layout fixes */
 #hero .flex-1 {
