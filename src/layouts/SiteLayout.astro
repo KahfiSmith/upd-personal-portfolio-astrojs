@@ -1,9 +1,11 @@
 ---
 import "../styles/global.css";
+import { ViewTransitions } from "astro:transitions";
 import CustomCursor from "@/components/ui/CustomCursor.astro";
 import bootAnimations from "@/scripts/boot-animations.ts?url";
 import smoothScroll from "@/scripts/boot-smooth-scroll.ts?url";
 import pageReveal from "@/scripts/boot-page-reveal.ts?url";
+import routeCurtainTransition from "@/scripts/route-curtain-transition.ts?url";
 import { SITE } from "@/config/site";
 import disableTopPull from "@/scripts/disable-top-pull.ts?url";
 
@@ -23,11 +25,44 @@ const pageDesc = description ?? SITE.description;
     <link rel="icon" type="image/png" href="/images/kahfi-og.png" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
+    <meta name="view-transition" content="same-origin" />
+    <!-- Critical background to prevent white flash before CSS loads -->
+    <meta name="theme-color" content="#f4f3ed" />
+    <style>
+      html, body { 
+        background: #f4f3ed; 
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+      }
+      /* Prevent content jump during navigation */
+      html {
+        scroll-behavior: smooth;
+      }
+      /* Prevent FOUC by ensuring consistent font loading */
+      body {
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+        visibility: visible;
+        opacity: 1;
+      }
+      /* View Transitions fallback */
+      @view-transition {
+        navigation: auto;
+      }
+      /* Smooth page transitions */
+      ::view-transition-old(root),
+      ::view-transition-new(root) {
+        animation-duration: 0.3s;
+      }
+    </style>
     
     <!-- Preload critical fonts -->
     <link rel="preload" href="/fonts/PlayfairDisplay-VariableFont_wght.ttf" as="font" type="font/ttf" crossorigin />
     <link rel="preload" href="/fonts/Inter-VariableFont_opsz,wght.ttf" as="font" type="font/ttf" crossorigin />
     <link rel="preload" href="/fonts/SpaceGrotesk-VariableFont_wght.ttf" as="font" type="font/ttf" crossorigin />
+    
+    <!-- Preload critical stylesheets -->
+    <link rel="preload" href="/src/styles/global.css" as="style" />
     
     <title>{pageTitle}</title>
     {pageDesc && <meta name="description" content={pageDesc} />}
@@ -40,6 +75,8 @@ const pageDesc = description ?? SITE.description;
     {pageDesc && <meta name="twitter:description" content={pageDesc} />}
     <meta name="twitter:image" content={SITE.ogImage} />
 
+    <ViewTransitions />
+
     <!-- Mark visit state ASAP to avoid FOUC -->
     <script>
       try {
@@ -48,6 +85,25 @@ const pageDesc = description ?? SITE.description;
         } else {
           document.documentElement.classList.add('needs-reveal');
         }
+        
+        // Handle View Transitions - prevent loader conflicts
+        document.addEventListener('astro:before-preparation', () => {
+          // Hide any loaders before transition starts
+          const loader = document.getElementById('simple-curtain-loader');
+          if (loader) {
+            loader.style.display = 'none';
+            document.body.classList.remove('overflow-hidden');
+          }
+        });
+        
+        document.addEventListener('astro:after-swap', () => {
+          // Ensure body is properly reset after transition
+          document.body.classList.remove('overflow-hidden');
+          const loader = document.getElementById('simple-curtain-loader');
+          if (loader && !loader.classList.contains('should-show')) {
+            loader.style.display = 'none';
+          }
+        });
       } catch (e) {}
     </script>
   </head>
@@ -62,6 +118,7 @@ const pageDesc = description ?? SITE.description;
     <script type="module" src={pageReveal}></script>
     <script type="module" src={smoothScroll}></script>
     <script type="module" src={bootAnimations}></script>
+    <script type="module" src={routeCurtainTransition}></script>
     <script type="module" src={disableTopPull}></script>
   </body>
   

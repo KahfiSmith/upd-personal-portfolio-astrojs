@@ -73,24 +73,31 @@ function isInternalNav(a: HTMLAnchorElement): boolean {
 }
 
 function boot() {
+  // Check if we're in a browser environment
+  if (typeof document === 'undefined') return;
+  
+  // Skip if View Transitions API is supported (Astro handles it)
+  if ('startViewTransition' in document) {
+    // console.log('View Transitions API supported, skipping route curtain');
+    return;
+  }
+
   const curtains = buildCurtains();
   if (!curtains) return;
 
-  // On page show, open curtains (reveal page)
-  const onShow = () => openCurtain(curtains);
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', onShow, { once: true });
-  } else {
-    // Slight delay to ensure styles applied
-    setTimeout(onShow, 30);
-  }
+  // Don't show curtains on initial page load (handled by page-transition-overlay)
+  // Only handle route transitions between pages for fallback
+  // console.log('Route curtain transition fallback initialized');
+  
+  setupLinkInterception(curtains);
+}
 
-  // Intercept link clicks
-  document.addEventListener('click', (e) => {
+function setupLinkInterception(curtains: Curtains) {
+  // Intercept link clicks for fallback behavior
+  document.addEventListener('click', (e: MouseEvent) => {
     // Respect modifier keys/middle clicks
-    const me = e as MouseEvent;
-    if (me.defaultPrevented) return;
-    if (me.button !== 0 || me.metaKey || me.ctrlKey || me.shiftKey || me.altKey) return;
+    if (e.defaultPrevented) return;
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     const a = (e.target as HTMLElement).closest('a') as HTMLAnchorElement | null;
     if (!a) return;
     if (a.hasAttribute('data-no-transition')) return;

@@ -15,6 +15,16 @@ import bootSimpleCurtainLoader from "@/scripts/boot-simple-curtain-loader.ts?url
   <!-- Mark reload as early as possible to control loader visibility -->
   <script>
     try {
+      // Don't show loader if this is a page transition
+      if (document.documentElement.hasAttribute('data-astro-transition')) {
+        return;
+      }
+      
+      // Don't show loader if we came from another internal page
+      if (document.referrer && new URL(document.referrer).origin === window.location.origin) {
+        return;
+      }
+      
       const entries = performance.getEntriesByType('navigation');
       const nav = entries && entries.length ? entries[0] : undefined;
       // navigation.type can be: 'navigate' | 'reload' | 'back_forward' | 'prerender'
@@ -29,7 +39,7 @@ import bootSimpleCurtainLoader from "@/scripts/boot-simple-curtain-loader.ts?url
     } catch (e) {}
   </script>
   <!-- Curtain loader shown only on index page -->
-  <SimpleCurtainLoader />
+  <!-- <SimpleCurtainLoader /> -->
   <script type="module" src={bootSimpleCurtainLoader}></script>
   <main class="min-h-screen relative overflow-hidden pt-6">
     <!-- LogoFolio-inspired Hero Section -->

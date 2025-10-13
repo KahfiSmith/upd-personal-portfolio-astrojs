@@ -341,3 +341,40 @@ a[id*="scroll"] {
   will-change: transform;
   backface-visibility: hidden;
 }
+
+/* View Transitions API Enhancements */
+@view-transition {
+  navigation: auto;
+}
+
+/* Smooth cross-document navigation */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Prevent loader conflicts during transitions */
+html[data-astro-transition] #simple-curtain-loader,
+html[data-astro-transition-scope] #simple-curtain-loader {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Ensure smooth page transitions without glitches */
+html[data-astro-transition] body,
+html[data-astro-transition-scope] body {
+  background: var(--color-cream) !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  overflow: visible !important;
+}
+
+/* Prevent any curtain animations during view transitions */
+html[data-astro-transition] .curtain-top,
+html[data-astro-transition] .curtain-bottom,
+html[data-astro-transition-scope] .curtain-top,
+html[data-astro-transition-scope] .curtain-bottom {
+  display: none !important;
+}

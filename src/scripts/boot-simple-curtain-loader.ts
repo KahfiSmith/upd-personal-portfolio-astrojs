@@ -26,6 +26,9 @@ class SimpleCurtainLoaderAnimation {
     this.timeline = gsap.timeline();
     this.isReloadVisit = this.detectReload();
     
+    // Listen for View Transitions to prevent loader on navigation
+    this.setupViewTransitionListeners();
+    
     if (this.elements.loader) {
       if (!this.isReloadVisit) {
         // Not a reload: remove loader immediately and skip
@@ -37,8 +40,29 @@ class SimpleCurtainLoaderAnimation {
     }
   }
 
+  private setupViewTransitionListeners(): void {
+    // Listen for astro page transitions
+    document.addEventListener('astro:page-load', () => {
+      // Skip loader on page transitions
+      if (this.elements.loader) {
+        try { document.body.classList.remove('overflow-hidden'); } catch (e) {}
+        this.elements.loader.remove();
+      }
+    });
+  }
+
   private detectReload(): boolean {
     try {
+      // Check if this is a View Transition navigation
+      if (document.documentElement.hasAttribute('data-astro-transition')) {
+        return false; // This is a page transition, not a reload
+      }
+      
+      // Check if we came from another internal page
+      if (document.referrer && new URL(document.referrer).origin === window.location.origin) {
+        return false; // This is internal navigation, not a reload
+      }
+      
       const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
       if (nav && 'type' in nav) {
         return nav.type === 'reload';

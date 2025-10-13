@@ -12,5 +12,8 @@ export default defineConfig({
         '@': fileURLToPath(new URL('./src', import.meta.url)),
       },
     },
+    build: {
+      cssCodeSplit: false, // Keep CSS in single bundle for better loading
+    },
   },
 });
