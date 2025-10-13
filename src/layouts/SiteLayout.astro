@@ -103,6 +103,11 @@ const pageDesc = description ?? SITE.description;
           if (loader && !loader.classList.contains('should-show')) {
             loader.style.display = 'none';
           }
+          
+          // Ensure cursor remains visible after navigation
+          try {
+            document.documentElement.classList.add('cursor-hidden');
+          } catch (e) {}
         });
       } catch (e) {}
     </script>

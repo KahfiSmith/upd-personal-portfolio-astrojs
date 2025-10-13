@@ -5,6 +5,14 @@
 export function initCustomCursor(): void {
   const root = document.getElementById("custom-cursor");
   if (!root) return;
+  
+  // Clean up previous initialization if exists
+  if ((root as any)._cleanup) {
+    (root as any)._cleanup();
+  }
+  
+  if ((root as any)._cursorInitialized) return; // guard against double init
+  (root as any)._cursorInitialized = true;
 
   const cursor = root.querySelector<HTMLDivElement>(".cursor-dot");
   if (!cursor) return;
@@ -187,19 +195,77 @@ export function initCustomCursor(): void {
   observer.observe(document.documentElement, { childList: true, subtree: true });
 
   // Event listeners
-  window.addEventListener("mousemove", onMouseMove, { passive: true });
-
-  // Hide cursor when leaving window
-  window.addEventListener("mouseleave", () => {
+  const onMouseMoveHandler = (e: MouseEvent) => onMouseMove(e);
+  const onMouseLeaveHandler = () => {
     cursor.style.opacity = "0";
     isVisible = false;
-  });
-
-  // Show cursor when entering window
-  window.addEventListener("mouseenter", () => {
+  };
+  const onMouseEnterHandler = () => {
     cursor.style.opacity = "1";
     isVisible = true;
     animate();
-  });
+  };
+
+  window.addEventListener("mousemove", onMouseMoveHandler, { passive: true });
+  window.addEventListener("mouseleave", onMouseLeaveHandler);
+  window.addEventListener("mouseenter", onMouseEnterHandler);
+
+  // Cleanup function
+  const cleanup = () => {
+    window.removeEventListener("mousemove", onMouseMoveHandler);
+    window.removeEventListener("mouseleave", onMouseLeaveHandler);
+    window.removeEventListener("mouseenter", onMouseEnterHandler);
+    
+    // Remove hover listeners
+    document.querySelectorAll<HTMLElement>(hoverSelector).forEach((el) => {
+      el.removeEventListener("mouseenter", onMouseEnter);
+      el.removeEventListener("mouseleave", onMouseLeave);
+    });
+    
+    document.querySelectorAll<HTMLElement>(darkElementSelector).forEach((el) => {
+      el.removeEventListener("mouseenter", onDarkElementEnter);
+      el.removeEventListener("mouseleave", onDarkElementLeave);
+    });
+    
+    document.querySelectorAll<HTMLElement>(lightElementSelector).forEach((el) => {
+      el.removeEventListener("mouseenter", onLightElementEnter);
+      el.removeEventListener("mouseleave", onLightElementLeave);
+    });
+    
+    observer.disconnect();
+    
+    try { document.documentElement.classList.remove('cursor-hidden'); } catch {}
+    try { (root as any)._cursorInitialized = false; } catch {}
+  };
+
+  // Store cleanup function for later use
+  (root as any)._cleanup = cleanup;
+
+  // Cleanup on unload (ensure system cursor returns promptly on nav)
+  // Hide native cursor after script is ready
+  try { document.documentElement.classList.add('cursor-hidden'); } catch {}
+
+  const onPageHide = () => {
+    cleanup();
+  };
+
+  window.addEventListener('pagehide', onPageHide);
+
+  // Listen for Astro View Transitions to reinitialize cursor
+  const onAfterSwap = () => {
+    // Reset initialization flag to allow reinit
+    cleanup();
+    
+    // Small delay to ensure DOM is ready
+    setTimeout(() => {
+      initCustomCursor();
+    }, 50);
+  };
+
+  // Only add the event listener if it's not already added
+  if (!(root as any)._hasAfterSwapListener) {
+    (root as any)._hasAfterSwapListener = true;
+    document.addEventListener('astro:after-swap', onAfterSwap);
+  }
 }
 

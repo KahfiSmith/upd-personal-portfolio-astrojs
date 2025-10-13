@@ -30,8 +30,8 @@ import cursorScript from "@/scripts/boot-custom-cursor.ts?url";
       #custom-cursor { display: none !important; } 
     }
     
-    /* Hide default cursor globally */
-    *, *::before, *::after {
+    /* Hide default cursor only when JS marks ready */
+    html.cursor-hidden *, html.cursor-hidden *::before, html.cursor-hidden *::after {
       cursor: none !important;
     }
     
