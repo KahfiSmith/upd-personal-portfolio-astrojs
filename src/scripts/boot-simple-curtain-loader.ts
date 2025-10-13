@@ -16,19 +16,42 @@ interface SimpleLoaderElements {
 class SimpleCurtainLoaderAnimation {
   private elements: SimpleLoaderElements;
   private timeline: gsap.core.Timeline;
-  private isFirstVisit: boolean;
   // Delay antara progress 100% dan mulai buka tirai (detik)
   private curtainOpenDelay: number = 0.35;
   private exitStarted: boolean = false;
+  private isReloadVisit: boolean = false;
 
   constructor() {
-    this.isFirstVisit = !localStorage.getItem('hasVisited');
     this.elements = this.getElements();
     this.timeline = gsap.timeline();
+    this.isReloadVisit = this.detectReload();
     
     if (this.elements.loader) {
+      if (!this.isReloadVisit) {
+        // Not a reload: remove loader immediately and skip
+        try { document.body.classList.remove('overflow-hidden'); } catch (e) {}
+        this.elements.loader.remove();
+        return;
+      }
       this.init();
     }
+  }
+
+  private detectReload(): boolean {
+    try {
+      const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+      if (nav && 'type' in nav) {
+        return nav.type === 'reload';
+      }
+      // Fallback for deprecated API
+      // @ts-ignore
+      if (performance && performance.navigation) {
+        // 1 === TYPE_RELOAD
+        // @ts-ignore
+        return performance.navigation.type === 1;
+      }
+    } catch {}
+    return false;
   }
 
   private getElements(): SimpleLoaderElements {
@@ -170,7 +193,7 @@ class SimpleCurtainLoaderAnimation {
   }
 
   private async waitForContentLoad(): Promise<void> {
-    const minLoadTime = this.isFirstVisit ? 3000 : 2000; // Minimum wait time to show progress
+    const minLoadTime = 2500; // Consistent duration when animation actually runs
     
     return new Promise((resolve) => {
       const startTime = Date.now();
@@ -203,8 +226,7 @@ class SimpleCurtainLoaderAnimation {
     this.exitStarted = true;
     const exitTimeline = gsap.timeline({
       onComplete: () => {
-        // Mark as visited and cleanup
-        localStorage.setItem('hasVisited', 'true');
+        // Cleanup only (no visit flag; index always shows curtain)
         document.body.classList.remove('overflow-hidden');
         try {
           document.documentElement.classList.remove('needs-reveal');

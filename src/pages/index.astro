@@ -3,12 +3,34 @@ import SiteLayout from "@/layouts/SiteLayout.astro";
 import { dataSkills } from "@/data/skills";
 import skillsMarquee from "@/scripts/skills-marquee-gsap.ts?url";
 import getInTouchAnim from "@/scripts/get-in-touch-anim.ts?url";
+import discoverButtonAnim from "@/scripts/discover-button-anim.ts?url";
+import SimpleCurtainLoader from "@/components/ui/SimpleCurtainLoader.astro";
+import bootSimpleCurtainLoader from "@/scripts/boot-simple-curtain-loader.ts?url";
 ---
 
 <SiteLayout
   title="Kahfi Smith — Frontend Web Developer"
   description="Frontend developer focused on performance, accessibility, and serene UX."
 >
+  <!-- Mark reload as early as possible to control loader visibility -->
+  <script>
+    try {
+      const entries = performance.getEntriesByType('navigation');
+      const nav = entries && entries.length ? entries[0] : undefined;
+      // navigation.type can be: 'navigate' | 'reload' | 'back_forward' | 'prerender'
+      // Only show curtain on explicit reload
+      // @ts-ignore - 'type' exists on PerformanceNavigationTiming at runtime
+      const isReloadNewAPI = nav && typeof nav === 'object' && 'type' in nav ? nav.type === 'reload' : false;
+      // Fallback (deprecated API): 1 === TYPE_RELOAD
+      // @ts-ignore
+      const isReloadLegacy = performance && performance.navigation ? performance.navigation.type === 1 : false;
+      const isReload = Boolean(isReloadNewAPI || isReloadLegacy);
+      if (isReload) document.documentElement.classList.add('is-reload');
+    } catch (e) {}
+  </script>
+  <!-- Curtain loader shown only on index page -->
+  <SimpleCurtainLoader />
+  <script type="module" src={bootSimpleCurtainLoader}></script>
   <main class="min-h-screen relative overflow-hidden pt-6">
     <!-- LogoFolio-inspired Hero Section -->
     <section
@@ -16,37 +38,41 @@ import getInTouchAnim from "@/scripts/get-in-touch-anim.ts?url";
       class="relative min-h-screen"
       style="cursor: none !important;"
     >
-      
       <div aria-hidden="true" class="absolute inset-0 -z-10">
         <div
           class="absolute top-10 -left-32 w-[300px] h-[300px] rounded-full opacity-25 blur-[120px]"
           style="background: radial-gradient(circle at center, #f97316 0%, #ec4899 60%, transparent 100%);"
-        ></div>
+        >
+        </div>
 
         <div
           class="absolute top-16 -right-32 w-[400px] h-[400px] rounded-full opacity-20 blur-[100px]"
           style="background: radial-gradient(circle at center, #8b5cf6 0%, #06b6d4 70%, transparent 100%);"
-        ></div>
+        >
+        </div>
 
         <div
           class="absolute top-10 right-10 w-[250px] h-[180px] rounded-full opacity-12 blur-[70px]"
           style="background: radial-gradient(circle at center, #a855f7 0%, #3b82f6 75%, transparent 100%);"
-        ></div>
+        >
+        </div>
 
         <div
           class="absolute top-1/2 left-2/3 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[250px] rounded-full opacity-18 blur-[90px]"
           style="background: radial-gradient(circle at center, #f59e0b 0%, #d946ef 65%, transparent 100%);"
-        ></div>
+        >
+        </div>
 
         <div
           class="absolute top-16 left-1/3 w-[280px] h-[220px] rounded-full opacity-14 blur-[75px]"
           style="background: radial-gradient(circle at center, #06b6d4 0%, #8b5cf6 70%, transparent 100%);"
-        ></div>
+        >
+        </div>
       </div>
-     
 
       <div
-        class="relative z-10 h-screen flex flex-col justify-between pt-2 px-8 pb-8 md:pt-4 md:pb-12 max-w-7xl mx-auto">
+        class="relative z-10 h-screen flex flex-col justify-between pt-2 px-8 pb-8 md:pt-4 md:pb-12 max-w-7xl mx-auto"
+      >
         <!-- Top Section -->
         <div class="flex justify-between items-center">
           <!-- Top Left - Tagline -->
@@ -62,11 +88,7 @@ import getInTouchAnim from "@/scripts/get-in-touch-anim.ts?url";
             class="relative px-6 py-3 md:px-8 md:py-4 rounded-full flex items-center justify-center cursor-pointer group overflow-hidden bg-cream border-2 border-charcoal/50"
           >
             <!-- Background color transition -->
-            <div
-              data-circle-bg
-              class="absolute inset-0 rounded-full"
-            >
-            </div>
+            <div data-circle-bg class="absolute inset-0 rounded-full"></div>
 
             <!-- Text content -->
             <div class="relative z-10 flex items-center gap-2">
@@ -112,33 +134,58 @@ import getInTouchAnim from "@/scripts/get-in-touch-anim.ts?url";
         </div>
       </div>
     </section>
-    
 
     <!-- Skills Section (2-row scroll-reactive marquee) -->
     <section class="my-12 md:my-20 relative overflow-visible">
       <div class="relative py-8">
         <!-- Top marquee block (black) - Rotated and overlapping -->
-        <div class="w-[120%] -ml-[10%] bg-charcoal text-cream px-6 py-6 md:px-10 md:py-8 overflow-hidden shadow-lg ring-1 ring-white/10 transform -rotate-6 origin-center relative z-20 mb-4">
+        <div
+          class="w-[120%] -ml-[10%] bg-charcoal text-cream px-6 py-6 md:px-10 md:py-8 overflow-hidden shadow-lg ring-1 ring-white/10 transform -rotate-6 origin-center relative z-20 mb-4"
+        >
           <div class="relative select-none">
-            <div data-skills-row="1" class="flex gap-8 whitespace-nowrap will-change-transform py-2">
-              {Array.from({ length: 3 }).map(() => (
-                dataSkills.map((s) => (
-                  <img src={s.imgSrc} alt={s.label} class="shrink-0 w-12 h-12 opacity-90 hover:opacity-100 transition-opacity" loading="lazy" />
-                ))
-              ))}
+            <div
+              data-skills-row="1"
+              class="flex gap-8 whitespace-nowrap will-change-transform py-2"
+            >
+              {
+                Array.from({ length: 3 }).map(() =>
+                  dataSkills.map((s) => (
+                    <img
+                      src={s.imgSrc}
+                      alt={s.label}
+                      class="shrink-0 w-12 h-12 opacity-90 hover:opacity-100 transition-opacity"
+                      loading="lazy"
+                    />
+                  ))
+                )
+              }
             </div>
           </div>
         </div>
 
         <!-- Bottom marquee block (black) - Slightly moved up to create overlap -->
-        <div class="w-full bg-charcoal text-cream px-6 py-6 md:px-10 md:py-8 overflow-hidden shadow-lg ring-1 ring-white/10 relative z-10 -mt-8">
+        <div
+          class="w-full bg-charcoal text-cream px-6 py-6 md:px-10 md:py-8 overflow-hidden shadow-lg ring-1 ring-white/10 relative z-10 -mt-8"
+        >
           <div class="relative select-none">
-            <div data-skills-row="2" class="flex gap-8 whitespace-nowrap will-change-transform py-2">
-              {Array.from({ length: 3 }).map(() => (
-                [...dataSkills].reverse().map((s) => (
-                  <img src={s.imgSrc} alt={s.label} class="shrink-0 w-12 h-12 opacity-90 hover:opacity-100 transition-opacity" loading="lazy" />
-                ))
-              ))}
+            <div
+              data-skills-row="2"
+              class="flex gap-8 whitespace-nowrap will-change-transform py-2"
+            >
+              {
+                Array.from({ length: 3 }).map(() =>
+                  [...dataSkills]
+                    .reverse()
+                    .map((s) => (
+                      <img
+                        src={s.imgSrc}
+                        alt={s.label}
+                        class="shrink-0 w-12 h-12 opacity-90 hover:opacity-100 transition-opacity"
+                        loading="lazy"
+                      />
+                    ))
+                )
+              }
             </div>
           </div>
         </div>
@@ -147,6 +194,139 @@ import getInTouchAnim from "@/scripts/get-in-touch-anim.ts?url";
       <script type="module" src={getInTouchAnim}></script>
     </section>
 
+    <!-- About Teaser Section -->
+    <section class="relative py-20 md:py-28 overflow-hidden">
+      <!-- Decorative Background -->
+      <div aria-hidden="true" class="absolute inset-0 -z-10">
+        <!-- Floating geometric shapes -->
+        <div class="absolute top-1/4 left-1/4 w-32 h-32 opacity-5">
+          <div
+            class="w-full h-full bg-gradient-to-br from-orange-400 to-pink-500 rounded-full blur-xl animate-pulse"
+          >
+          </div>
+        </div>
+        <div class="absolute top-3/4 right-1/3 w-24 h-24 opacity-10">
+          <div
+            class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-600 rotate-45 blur-lg"
+          >
+          </div>
+        </div>
+        <div class="absolute bottom-1/4 left-1/2 w-20 h-20 opacity-8">
+          <div
+            class="w-full h-full bg-gradient-to-br from-green-400 to-teal-500 rounded-full blur-md"
+          >
+          </div>
+        </div>
 
+        <!-- Dotted pattern -->
+        <div class="absolute inset-0 opacity-5">
+          <div class="grid grid-cols-12 gap-4 h-full max-w-6xl mx-auto">
+            {
+              Array.from({ length: 48 }).map(() => (
+                <div class="w-1 h-1 bg-charcoal rounded-full" />
+              ))
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="max-w-5xl mx-auto px-6 md:px-8 text-center">
+        <!-- Main Content -->
+        <div class="space-y-8">
+          <!-- Tagline -->
+          <div data-animate="fade-up" class="space-y-4">
+            <p
+              class="text-charcoal/60 text-sm md:text-base font-mono tracking-wider uppercase"
+            >
+              Get to know me better
+            </p>
+            <h2
+              class="font-display text-charcoal text-3xl sm:text-4xl md:text-6xl lg:text-7xl leading-tight font-light"
+            >
+              More than just
+              <span
+                class="block font-medium bg-gradient-to-r from-black via-cyan-500 to-black bg-clip-text text-transparent"
+              >
+                Code & Coffee
+              </span>
+            </h2>
+          </div>
+
+          <!-- Description -->
+          <div
+            data-animate="fade-up"
+            data-delay="0.2"
+            class="max-w-3xl mx-auto"
+          >
+            <p class="text-charcoal/70 text-lg md:text-xl leading-relaxed">
+              Behind every line of code is a story of curiosity, creativity, and
+              countless cups of coffee. Dive deeper into my journey, passions,
+              and the philosophy that drives my work.
+            </p>
+          </div>
+
+          <!-- Decorative divider -->
+          <div
+            data-animate="fade-up"
+            data-delay="0.3"
+            class="flex items-center justify-center space-x-4 py-6"
+          >
+            <div
+              class="w-12 h-[1px] bg-gradient-to-r from-transparent to-charcoal/30"
+            >
+            </div>
+            <div class="w-2 h-2 bg-charcoal/40 rounded-full"></div>
+            <div class="w-8 h-[1px] bg-charcoal/20"></div>
+            <div class="w-1 h-1 bg-charcoal/30 rounded-full"></div>
+            <div class="w-8 h-[1px] bg-charcoal/20"></div>
+            <div class="w-2 h-2 bg-charcoal/40 rounded-full"></div>
+            <div
+              class="w-12 h-[1px] bg-gradient-to-l from-transparent to-charcoal/30"
+            >
+            </div>
+          </div>
+
+          <!-- Unique Button with GSAP Animation -->
+          <div data-animate="fade-up" data-delay="0.4" class="pt-4">
+            <a
+              href="/about"
+              data-discover-button
+              class="relative inline-flex items-center justify-center px-6 py-3 md:px-8 md:py-4 rounded-full bg-cream border-2 border-charcoal/50 hover:ring-charcoal hover:ring-2 text-charcoal/60 text-sm md:text-base font-medium overflow-hidden cursor-pointer group transition-all duration-300"
+              data-magnetic
+            >
+              <!-- Fill background -->
+              <div data-fill-bg class="absolute inset-0 rounded-full bg-charcoal"></div>
+              
+              <!-- Ripple effect -->
+              <div data-ripple class="absolute inset-0 rounded-full bg-cream"></div>
+              
+              <!-- Button text -->
+              <span data-button-text class="relative z-10 font-sans whitespace-nowrap">Discover My Story</span>
+            </a>
+          </div>
+
+          <!-- Fun fact or quote -->
+          <div data-animate="fade-up" data-delay="0.5" class="pt-8">
+            <div class="relative">
+              <div class="absolute -top-2 -left-2 w-6 h-6 text-charcoal/20">
+                <svg fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z"
+                  ></path>
+                </svg>
+              </div>
+              <p
+                class="text-charcoal/50 text-sm md:text-base italic font-light"
+              >
+                "Every great developer has a story worth telling."
+              </p>
+            </div>
+          </div>
+          
+          <!-- Button Animation Script -->
+          <script type="module" src={discoverButtonAnim}></script>
+        </div>
+      </div>
+    </section>
   </main>
 </SiteLayout>

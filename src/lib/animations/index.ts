@@ -21,7 +21,7 @@ export function initAnimations(opts: InitOptions = {}): void {
     const base: gsap.TweenVars = {
       opacity: 0,
       filter: "blur(8px)",
-      duration: prefersReduced ? 0 : 0.9,
+      duration: prefersReduced ? 0 : 0.6,
       ease: "power3.out",
       delay,
       scrollTrigger: prefersReduced ? undefined : { trigger: el, start: "top 85%" },

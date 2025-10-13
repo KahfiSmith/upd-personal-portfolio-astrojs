@@ -90,10 +90,9 @@
     }
   }
 
-  /* Show immediately on first paint (avoid FOUC) */
-  #simple-curtain-loader {
-    opacity: 1;
-  }
+  /* Hidden by default; only show on reload */
+  #simple-curtain-loader { display: none; }
+  html.is-reload #simple-curtain-loader { display: block; }
 </style>
 
 <noscript>
