@@ -159,6 +159,38 @@ html.needs-reveal #page-transition-overlay {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Route Curtain Transition */
+#route-curtain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+#route-curtain-overlay.is-active {
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.rt-curtain {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: var(--color-charcoal);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+.rt-top {
+  top: 0;
+  transform: translateY(-100%);
+}
+.rt-bottom {
+  bottom: 0;
+  transform: translateY(100%);
+}
+
 /* Curtain panels */
 .curtain-top,
 .curtain-bottom {
@@ -299,4 +331,13 @@ a[id*="scroll"] {
   display: none !important;
   opacity: 0 !important;
   visibility: hidden !important;
+}
+
+/* Tech Orbit helpers */
+[data-tech-orbit] {
+  contain: layout style paint;
+}
+[data-tech-orbit] [data-tech-item] {
+  will-change: transform;
+  backface-visibility: hidden;
 }
