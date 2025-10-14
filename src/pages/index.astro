@@ -16,26 +16,35 @@ import bootSimpleCurtainLoader from "@/scripts/boot-simple-curtain-loader.ts?url
   <script>
     try {
       // Don't show loader if this is a page transition
-      if (document.documentElement.hasAttribute('data-astro-transition')) {
+      if (document.documentElement.hasAttribute("data-astro-transition")) {
         return;
       }
-      
+
       // Don't show loader if we came from another internal page
-      if (document.referrer && new URL(document.referrer).origin === window.location.origin) {
+      if (
+        document.referrer &&
+        new URL(document.referrer).origin === window.location.origin
+      ) {
         return;
       }
-      
-      const entries = performance.getEntriesByType('navigation');
+
+      const entries = performance.getEntriesByType("navigation");
       const nav = entries && entries.length ? entries[0] : undefined;
       // navigation.type can be: 'navigate' | 'reload' | 'back_forward' | 'prerender'
       // Only show curtain on explicit reload
       // @ts-ignore - 'type' exists on PerformanceNavigationTiming at runtime
-      const isReloadNewAPI = nav && typeof nav === 'object' && 'type' in nav ? nav.type === 'reload' : false;
+      const isReloadNewAPI =
+        nav && typeof nav === "object" && "type" in nav
+          ? nav.type === "reload"
+          : false;
       // Fallback (deprecated API): 1 === TYPE_RELOAD
       // @ts-ignore
-      const isReloadLegacy = performance && performance.navigation ? performance.navigation.type === 1 : false;
+      const isReloadLegacy =
+        performance && performance.navigation
+          ? performance.navigation.type === 1
+          : false;
       const isReload = Boolean(isReloadNewAPI || isReloadLegacy);
-      if (isReload) document.documentElement.classList.add('is-reload');
+      if (isReload) document.documentElement.classList.add("is-reload");
     } catch (e) {}
   </script>
   <!-- Curtain loader shown only on index page -->
@@ -305,13 +314,22 @@ import bootSimpleCurtainLoader from "@/scripts/boot-simple-curtain-loader.ts?url
               data-magnetic
             >
               <!-- Fill background -->
-              <div data-fill-bg class="absolute inset-0 rounded-full bg-charcoal"></div>
-              
+              <div
+                data-fill-bg
+                class="absolute inset-0 rounded-full bg-charcoal"
+              >
+              </div>
+
               <!-- Ripple effect -->
-              <div data-ripple class="absolute inset-0 rounded-full bg-cream"></div>
-              
+              <div data-ripple class="absolute inset-0 rounded-full bg-cream">
+              </div>
+
               <!-- Button text -->
-              <span data-button-text class="relative z-10 font-sans whitespace-nowrap">Discover My Story</span>
+              <span
+                data-button-text
+                class="relative z-10 font-sans whitespace-nowrap"
+                >Discover My Story</span
+              >
             </a>
           </div>
 
@@ -325,14 +343,9 @@ import bootSimpleCurtainLoader from "@/scripts/boot-simple-curtain-loader.ts?url
                   ></path>
                 </svg>
               </div>
-              <p
-                class="text-charcoal/50 text-sm md:text-base italic font-light"
-              >
-                "Every great developer has a story worth telling."
-              </p>
             </div>
           </div>
-          
+
           <!-- Button Animation Script -->
           <script type="module" src={discoverButtonAnim}></script>
         </div>
