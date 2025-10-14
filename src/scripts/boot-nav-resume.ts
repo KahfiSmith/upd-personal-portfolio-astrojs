@@ -14,6 +14,25 @@ function resetOverlays() {
 
   try { document.body.classList.remove('overflow-hidden'); } catch {}
   try { document.documentElement.classList.add('cursor-hidden'); } catch {}
+
+  // Reset Get in Touch pill visual state to avoid stuck fill after BFCache
+  try {
+    const pill = document.querySelector<HTMLElement>('[data-get-in-touch]');
+    const circleBg = pill?.querySelector<HTMLElement>('[data-circle-bg]');
+    if (pill && circleBg) {
+      // Temporarily disable transition to force visual reset
+      const prev = circleBg.style.transition;
+      circleBg.style.transition = 'none';
+      circleBg.style.transform = 'translateX(-100%)';
+      circleBg.style.opacity = '0';
+      pill.style.transform = 'translate(0px, 0px)';
+      pill.classList.remove('has-fill');
+      pill.classList.remove('is-active');
+      requestAnimationFrame(() => {
+        circleBg.style.transition = prev || 'transform 220ms ease-out, background-color 220ms ease-out, opacity 220ms ease-out';
+      });
+    }
+  } catch {}
 }
 
 function boot() {
@@ -35,4 +54,3 @@ if (typeof document !== 'undefined') {
 }
 
 export {};
-

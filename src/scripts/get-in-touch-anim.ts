@@ -9,9 +9,10 @@ const initGetInTouchAnim = () => {
   const pill = document.querySelector<HTMLElement>('[data-get-in-touch]');
   if (!pill) return;
 
-  // Idempotent guard across HMR/nav restores
-  if ((pill as any)._gi_inited) return;
-  (pill as any)._gi_inited = true;
+  // Clean up any existing initialization
+  if ((pill as any)._gi_cleanup) {
+    (pill as any)._gi_cleanup();
+  }
 
   const circleBg = pill.querySelector<HTMLElement>('[data-circle-bg]');
   const ripple = pill.querySelector<HTMLElement>('[data-ripple]');
@@ -20,8 +21,9 @@ const initGetInTouchAnim = () => {
   pill.style.willChange = 'transform';
   pill.style.transition = 'transform 180ms ease-out';
 
-  let hasShown = false;
+  // Reset state for this instance
   let bgVisible = false;
+  let hasShown = false;
   if (circleBg) {
     // Prevent initial flash-out: no transition during setup
     circleBg.style.transition = 'none';
@@ -38,16 +40,15 @@ const initGetInTouchAnim = () => {
   }
 
   const onEnter = () => {
-    if (circleBg) {
-      hasShown = true;
-      // Enable transition only when revealing
-      circleBg.style.transition = 'transform 220ms ease-out, background-color 220ms ease-out, opacity 220ms ease-out';
-      circleBg.style.opacity = '1';
-      circleBg.style.transform = 'translateX(0)';
-      (pill as HTMLElement).classList.add('is-active');
-      (pill as HTMLElement).classList.add('has-fill');
-      bgVisible = true;
-    }
+    if (!circleBg) return;
+    hasShown = true;
+    // Make fill visible immediately, animate only the slide
+    circleBg.style.opacity = '1';
+    circleBg.style.transition = 'transform 280ms ease-out';
+    circleBg.style.transform = 'translateX(0)';
+    (pill as HTMLElement).classList.add('is-active');
+    (pill as HTMLElement).classList.add('has-fill');
+    bgVisible = true;
   };
 
   const onMove = (e: MouseEvent) => {
@@ -64,15 +65,26 @@ const initGetInTouchAnim = () => {
   };
 
   const onLeave = () => {
-    // Always revert to initial (no persistent fill)
+    // Always revert to initial state (no persistent fill)
     pill.style.transform = 'translate(0px, 0px)';
-    if (circleBg) {
-      circleBg.style.transform = 'translateX(-100%)';
+    if (!circleBg) return;
+    // Slide out first (crisp), then hide opacity after transition ends to avoid fade feel
+    circleBg.style.transition = 'transform 280ms ease-out';
+    const onEnd = (ev: TransitionEvent) => {
+      if (ev.propertyName !== 'transform') return;
+      circleBg.removeEventListener('transitionend', onEnd);
+      // Hide without animating opacity to prevent pulsing/fade feel
+      const prev = circleBg.style.transition;
+      circleBg.style.transition = 'none';
       circleBg.style.opacity = '0';
-      (pill as HTMLElement).classList.remove('has-fill');
-      (pill as HTMLElement).classList.remove('is-active');
-      bgVisible = false;
-    }
+      // Keep transition setting consistent for next hover
+      requestAnimationFrame(() => { circleBg.style.transition = prev || 'transform 280ms ease-out'; });
+    };
+    circleBg.addEventListener('transitionend', onEnd, { once: true });
+    circleBg.style.transform = 'translateX(-100%)';
+    (pill as HTMLElement).classList.remove('has-fill');
+    (pill as HTMLElement).classList.remove('is-active');
+    bgVisible = false;
   };
 
   const onClick = () => {
@@ -99,7 +111,12 @@ const initGetInTouchAnim = () => {
     pill.removeEventListener('mousemove', onMove);
     pill.removeEventListener('mouseleave', onLeave);
     pill.removeEventListener('click', onClick);
+    (pill as any)._gi_cleanup = null;
   };
+  
+  // Store cleanup function on element
+  (pill as any)._gi_cleanup = cleanup;
+  
   // @ts-ignore
   if (import.meta && (import.meta as any).hot) {
     // @ts-ignore
@@ -115,19 +132,19 @@ if (typeof document !== 'undefined') {
   // Re-run on BFCache restore
   window.addEventListener('pageshow', (e: PageTransitionEvent) => {
     if ((e as any).persisted) {
-      // Force visual reset so it doesn't remain filled
+      // Force visual reset before re-init
       const pill = document.querySelector<HTMLElement>('[data-get-in-touch]');
       const circleBg = pill?.querySelector<HTMLElement>('[data-circle-bg]');
       if (pill && circleBg) {
+        const prev = circleBg.style.transition;
         circleBg.style.transition = 'none';
         circleBg.style.transform = 'translateX(-100%)';
         circleBg.style.opacity = '0';
         pill.style.transform = 'translate(0px, 0px)';
         pill.classList.remove('has-fill');
         pill.classList.remove('is-active');
-        // Re-enable transitions after a tick
         requestAnimationFrame(() => {
-          circleBg.style.transition = 'transform 220ms ease-out, background-color 220ms ease-out, opacity 220ms ease-out';
+          circleBg.style.transition = prev || 'transform 280ms ease-out';
         });
       }
       start();
@@ -135,6 +152,7 @@ if (typeof document !== 'undefined') {
   });
   // Re-run on Astro swap
   document.addEventListener('astro:after-swap', () => {
+    // Reset button state before re-initialization
     const pill = document.querySelector<HTMLElement>('[data-get-in-touch]');
     const circleBg = pill?.querySelector<HTMLElement>('[data-circle-bg]');
     if (pill && circleBg) {
@@ -144,9 +162,22 @@ if (typeof document !== 'undefined') {
       pill.style.transform = 'translate(0px, 0px)';
       pill.classList.remove('has-fill');
       pill.classList.remove('is-active');
-      requestAnimationFrame(() => {
-        circleBg.style.transition = 'transform 220ms ease-out, background-color 220ms ease-out, opacity 220ms ease-out';
-      });
+    }
+    start();
+  });
+  
+  // Also listen for astro:page-load for additional safety
+  document.addEventListener('astro:page-load', () => {
+    // Reset button state before re-initialization
+    const pill = document.querySelector<HTMLElement>('[data-get-in-touch]');
+    const circleBg = pill?.querySelector<HTMLElement>('[data-circle-bg]');
+    if (pill && circleBg) {
+      circleBg.style.transition = 'none';
+      circleBg.style.transform = 'translateX(-100%)';
+      circleBg.style.opacity = '0';
+      pill.style.transform = 'translate(0px, 0px)';
+      pill.classList.remove('has-fill');
+      pill.classList.remove('is-active');
     }
     start();
   });

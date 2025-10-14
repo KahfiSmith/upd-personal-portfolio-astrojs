@@ -72,30 +72,7 @@ export function initAnimations(opts: InitOptions = {}): void {
     gsap.fromTo(hero, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1, ease: "power2.out" });
   }
 
-  // Index page: Get in Touch pill interactions if present
-  const getInTouchBtn = document.querySelector<HTMLElement>("[data-get-in-touch]");
-  const circleBackground = document.querySelector<HTMLElement>("[data-circle-bg]");
-  const ripple = document.querySelector<HTMLElement>("[data-ripple]");
-  if (getInTouchBtn && circleBackground && ripple) {
-    gsap.set(circleBackground, { x: "-100%" });
-    if (!prefersReduced) {
-      gsap.to(getInTouchBtn, { y: -2, duration: 4, repeat: -1, yoyo: true, ease: "power2.inOut" });
-    }
-    getInTouchBtn.addEventListener("mouseenter", () => {
-      gsap.to(circleBackground, { x: 0, duration: 0.4, ease: "power2.out" });
-      gsap.to(getInTouchBtn, { y: -3, duration: 0.3, ease: "power2.out" });
-      if (!prefersReduced) {
-        gsap.fromTo(ripple, { scale: 1, opacity: 0.5 }, { scale: 1.1, opacity: 0, duration: 0.6, ease: "power2.out" });
-      }
-    });
-    getInTouchBtn.addEventListener("mouseleave", () => {
-      gsap.to(circleBackground, { x: "-100%", duration: 0.4, ease: "power2.out" });
-      gsap.to(getInTouchBtn, { y: -2, duration: 0.3, ease: "power2.out" });
-    });
-    getInTouchBtn.addEventListener("click", () => {
-      gsap.fromTo(getInTouchBtn, { scale: 1 }, { scale: 0.95, duration: 0.1, ease: "power2.out", yoyo: true, repeat: 1 });
-    });
-  }
+  // Get in Touch pill interactions are handled by page-specific script (to avoid conflicts)
 
   // Index page: Scroll down by one screen when clicking indicator - DISABLED
   // const scrollNext = document.querySelector<HTMLElement>("[data-scroll-next]");
