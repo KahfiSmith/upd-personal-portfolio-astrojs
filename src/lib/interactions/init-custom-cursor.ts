@@ -251,6 +251,18 @@ export function initCustomCursor(): void {
 
   window.addEventListener('pagehide', onPageHide);
 
+  // Ensure cursor re-initializes after BFCache restore (back/forward)
+  const onPageShow = (e: PageTransitionEvent) => {
+    // Re-run init when page is restored from BFCache
+    if ((e as any).persisted) {
+      // Small delay to allow layout/painters to resume
+      setTimeout(() => {
+        try { initCustomCursor(); } catch {}
+      }, 30);
+    }
+  };
+  window.addEventListener('pageshow', onPageShow);
+
   // Listen for Astro View Transitions to reinitialize cursor
   const onAfterSwap = () => {
     // Reset initialization flag to allow reinit

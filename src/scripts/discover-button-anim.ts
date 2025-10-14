@@ -4,6 +4,10 @@ const initDiscoverButtonAnim = () => {
   const button = document.querySelector<HTMLElement>('[data-discover-button]');
   if (!button) return;
 
+  // Idempotent guard across BFCache/HMR
+  if ((button as any)._disc_inited) return;
+  (button as any)._disc_inited = true;
+
   const fillBg = button.querySelector<HTMLElement>('[data-fill-bg]');
   const buttonText = button.querySelector<HTMLElement>('[data-button-text]');
   const ripple = button.querySelector<HTMLElement>('[data-ripple]');
@@ -108,11 +112,16 @@ const initDiscoverButtonAnim = () => {
 };
 
 if (typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initDiscoverButtonAnim, { once: true });
-  } else {
-    initDiscoverButtonAnim();
-  }
+  const start = () => initDiscoverButtonAnim();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+  else start();
+
+  // Re-run on BFCache restore
+  window.addEventListener('pageshow', (e: PageTransitionEvent) => {
+    if ((e as any).persisted) start();
+  });
+  // Re-run on Astro swap
+  document.addEventListener('astro:after-swap', start);
 }
 
 export {};

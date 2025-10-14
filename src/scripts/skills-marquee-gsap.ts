@@ -42,7 +42,18 @@ function prepareRow(row: HTMLElement, viewport: number): number {
   return sequenceWidth;
 }
 
+type MarqueeController = {
+  cleanup: () => void;
+};
+
+declare global {
+  interface Window { __skillsMarquee?: MarqueeController }
+}
+
 function boot() {
+  // If an existing marquee is running (e.g., from a previous init), clean it up
+  try { window.__skillsMarquee?.cleanup(); } catch {}
+
   const row1 = document.querySelector('[data-skills-row="1"]') as HTMLElement | null;
   const row2 = document.querySelector('[data-skills-row="2"]') as HTMLElement | null;
   if (!row1 || !row2) return;
@@ -146,12 +157,34 @@ function boot() {
     });
   }
   window.addEventListener('resize', onResize, { passive: true });
+
+  // Expose cleanup so we can safely re-init (BFCache restore / swaps)
+  const cleanup = () => {
+    try { gsap.ticker.remove(tick); } catch {}
+    window.removeEventListener('scroll', onScroll as any);
+    window.removeEventListener('wheel', onWheel as any);
+    window.removeEventListener('touchstart', onTouchStart as any);
+    window.removeEventListener('touchmove', onTouchMove as any);
+    window.removeEventListener('resize', onResize as any);
+  };
+  window.__skillsMarquee = { cleanup };
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', boot, { once: true });
-} else {
-  boot();
-}
+const start = () => boot();
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+else start();
+
+// Re-initialize after BFCache restore
+window.addEventListener('pageshow', (e: PageTransitionEvent) => {
+  // Only when restored from cache
+  if ((e as any).persisted) {
+    start();
+  }
+});
+
+// Re-init after Astro swaps if triggered
+document.addEventListener('astro:after-swap', () => {
+  start();
+});
 
 export {};

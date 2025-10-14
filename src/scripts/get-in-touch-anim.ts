@@ -9,6 +9,10 @@ const initGetInTouchAnim = () => {
   const pill = document.querySelector<HTMLElement>('[data-get-in-touch]');
   if (!pill) return;
 
+  // Idempotent guard across HMR/nav restores
+  if ((pill as any)._gi_inited) return;
+  (pill as any)._gi_inited = true;
+
   const circleBg = pill.querySelector<HTMLElement>('[data-circle-bg]');
   const ripple = pill.querySelector<HTMLElement>('[data-ripple]');
 
@@ -60,21 +64,14 @@ const initGetInTouchAnim = () => {
   };
 
   const onLeave = () => {
+    // Always revert to initial (no persistent fill)
     pill.style.transform = 'translate(0px, 0px)';
     if (circleBg) {
-      if (hasShown) {
-        circleBg.style.transform = 'translateX(0)';
-        circleBg.style.opacity = '1';
-        (pill as HTMLElement).classList.add('has-fill');
-        (pill as HTMLElement).classList.remove('is-active');
-        bgVisible = true;
-      } else {
-        circleBg.style.transform = 'translateX(-100%)';
-        circleBg.style.opacity = '0';
-        (pill as HTMLElement).classList.remove('has-fill');
-        (pill as HTMLElement).classList.remove('is-active');
-        bgVisible = false;
-      }
+      circleBg.style.transform = 'translateX(-100%)';
+      circleBg.style.opacity = '0';
+      (pill as HTMLElement).classList.remove('has-fill');
+      (pill as HTMLElement).classList.remove('is-active');
+      bgVisible = false;
     }
   };
 
@@ -111,11 +108,48 @@ const initGetInTouchAnim = () => {
 };
 
 if (typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initGetInTouchAnim, { once: true });
-  } else {
-    initGetInTouchAnim();
-  }
+  const start = () => initGetInTouchAnim();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+  else start();
+
+  // Re-run on BFCache restore
+  window.addEventListener('pageshow', (e: PageTransitionEvent) => {
+    if ((e as any).persisted) {
+      // Force visual reset so it doesn't remain filled
+      const pill = document.querySelector<HTMLElement>('[data-get-in-touch]');
+      const circleBg = pill?.querySelector<HTMLElement>('[data-circle-bg]');
+      if (pill && circleBg) {
+        circleBg.style.transition = 'none';
+        circleBg.style.transform = 'translateX(-100%)';
+        circleBg.style.opacity = '0';
+        pill.style.transform = 'translate(0px, 0px)';
+        pill.classList.remove('has-fill');
+        pill.classList.remove('is-active');
+        // Re-enable transitions after a tick
+        requestAnimationFrame(() => {
+          circleBg.style.transition = 'transform 220ms ease-out, background-color 220ms ease-out, opacity 220ms ease-out';
+        });
+      }
+      start();
+    }
+  });
+  // Re-run on Astro swap
+  document.addEventListener('astro:after-swap', () => {
+    const pill = document.querySelector<HTMLElement>('[data-get-in-touch]');
+    const circleBg = pill?.querySelector<HTMLElement>('[data-circle-bg]');
+    if (pill && circleBg) {
+      circleBg.style.transition = 'none';
+      circleBg.style.transform = 'translateX(-100%)';
+      circleBg.style.opacity = '0';
+      pill.style.transform = 'translate(0px, 0px)';
+      pill.classList.remove('has-fill');
+      pill.classList.remove('is-active');
+      requestAnimationFrame(() => {
+        circleBg.style.transition = 'transform 220ms ease-out, background-color 220ms ease-out, opacity 220ms ease-out';
+      });
+    }
+    start();
+  });
 }
 
 export {};

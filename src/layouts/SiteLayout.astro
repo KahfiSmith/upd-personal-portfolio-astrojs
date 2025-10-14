@@ -6,6 +6,7 @@ import bootAnimations from "@/scripts/boot-animations.ts?url";
 import smoothScroll from "@/scripts/boot-smooth-scroll.ts?url";
 import pageReveal from "@/scripts/boot-page-reveal.ts?url";
 import routeCurtainTransition from "@/scripts/route-curtain-transition.ts?url";
+import navResume from "@/scripts/boot-nav-resume.ts?url";
 import { SITE } from "@/config/site";
 import disableTopPull from "@/scripts/disable-top-pull.ts?url";
 
@@ -125,6 +126,7 @@ const pageDesc = description ?? SITE.description;
     <script type="module" src={bootAnimations}></script>
     <script type="module" src={routeCurtainTransition}></script>
     <script type="module" src={disableTopPull}></script>
+    <script type="module" src={navResume}></script>
   </body>
   
 </html>
