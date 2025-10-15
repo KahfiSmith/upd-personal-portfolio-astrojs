@@ -19,18 +19,18 @@ class SimpleCurtainLoaderAnimation {
   // Delay antara progress 100% dan mulai buka tirai (detik)
   private curtainOpenDelay: number = 0.35;
   private exitStarted: boolean = false;
-  private isReloadVisit: boolean = false;
+  private shouldRun: boolean = false;
 
   constructor() {
     this.elements = this.getElements();
     this.timeline = gsap.timeline();
-    this.isReloadVisit = this.detectReload();
+    this.shouldRun = this.detectShouldRun();
     
     // Listen for View Transitions to prevent loader on navigation
     this.setupViewTransitionListeners();
     
     if (this.elements.loader) {
-      if (!this.isReloadVisit) {
+      if (!this.shouldRun) {
         // Not a reload: remove loader immediately and skip
         try { document.body.classList.remove('overflow-hidden'); } catch (e) {}
         this.elements.loader.remove();
@@ -43,7 +43,8 @@ class SimpleCurtainLoaderAnimation {
   private setupViewTransitionListeners(): void {
     // Listen for astro page transitions
     document.addEventListener('astro:page-load', () => {
-      // Skip loader on page transitions
+      // Only act during real View Transitions (not on initial load)
+      if (!document.documentElement.hasAttribute('data-astro-transition')) return;
       if (this.elements.loader) {
         try { document.body.classList.remove('overflow-hidden'); } catch (e) {}
         this.elements.loader.remove();
@@ -51,29 +52,39 @@ class SimpleCurtainLoaderAnimation {
     });
   }
 
-  private detectReload(): boolean {
+  private detectShouldRun(): boolean {
     try {
-      // Check if this is a View Transition navigation
+      // Skip on view transition navigations (Astro handles these)
       if (document.documentElement.hasAttribute('data-astro-transition')) {
-        return false; // This is a page transition, not a reload
+        return false;
       }
-      
-      // Check if we came from another internal page
-      if (document.referrer && new URL(document.referrer).origin === window.location.origin) {
-        return false; // This is internal navigation, not a reload
-      }
-      
+
+      // Highest priority: explicit reload
       const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
       if (nav && 'type' in nav) {
-        return nav.type === 'reload';
-      }
-      // Fallback for deprecated API
-      // @ts-ignore
-      if (performance && performance.navigation) {
-        // 1 === TYPE_RELOAD
+        if (nav.type === 'reload') return true;
+      } else {
+        // Legacy fallback
         // @ts-ignore
-        return performance.navigation.type === 1;
+        if (performance && performance.navigation && performance.navigation.type === 1) return true;
       }
+
+      // First visit (marked by layout)
+      if (document.documentElement.classList.contains('needs-reveal')) {
+        return true;
+      }
+
+      // Internal navigations should not show
+      if (document.referrer && new URL(document.referrer).origin === window.location.origin) {
+        return false;
+      }
+
+      // Direct entry (open site in new tab or address bar)
+      if (nav && 'type' in nav) {
+        return nav.type === 'navigate';
+      }
+      // Fallback: if no same-origin referrer, treat as entry
+      return true;
     } catch {}
     return false;
   }
@@ -110,10 +121,9 @@ class SimpleCurtainLoaderAnimation {
       progressBar, progressNumber
     } = this.elements;
 
-    // Show loader
-    gsap.set(loader, { 
-      opacity: 1 
-    });
+    // Ensure loader is visible even if CSS hid it
+    try { (loader as HTMLElement).style.display = 'block'; } catch {}
+    gsap.set(loader, { opacity: 1 });
 
     // Curtains start closed
     gsap.set([curtainTop, curtainBottom], {

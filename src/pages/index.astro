@@ -4,6 +4,7 @@ import HeroSection from "@/components/sections/HeroSection.astro";
 import SkillsMarquee from "@/components/sections/SkillsMarquee.astro";
 import AboutTeaser from "@/components/sections/AboutTeaser.astro";
 import bootSimpleCurtainLoader from "@/scripts/boot-simple-curtain-loader.ts?url";
+import SimpleCurtainLoader from "@/components/ui/SimpleCurtainLoader.astro";
 ---
 
 <SiteLayout
@@ -12,40 +13,44 @@ import bootSimpleCurtainLoader from "@/scripts/boot-simple-curtain-loader.ts?url
 >
   <!-- Mark reload as early as possible to control loader visibility -->
   <script>
-    try {
-      // Don't show loader if this is a page transition
-      if (document.documentElement.hasAttribute("data-astro-transition")) {
-        return;
-      }
+    (() => {
+      try {
+        // Skip if this is a page transition navigation
+        if (document.documentElement.hasAttribute("data-astro-transition")) {
+          return;
+        }
 
-      // Don't show loader if we came from another internal page
-      if (
-        document.referrer &&
-        new URL(document.referrer).origin === window.location.origin
-      ) {
-        return;
-      }
+        // Skip if we came from another internal page
+        if (
+          document.referrer &&
+          new URL(document.referrer).origin === window.location.origin
+        ) {
+          return;
+        }
 
-      const entries = performance.getEntriesByType("navigation");
-      const nav = entries && entries.length ? entries[0] : undefined;
-      // navigation.type can be: 'navigate' | 'reload' | 'back_forward' | 'prerender'
-      // Only show curtain on explicit reload
-      // @ts-ignore - 'type' exists on PerformanceNavigationTiming at runtime
-      const isReloadNewAPI =
-        nav && typeof nav === "object" && "type" in nav
-          ? nav.type === "reload"
-          : false;
-      // Fallback (deprecated API): 1 === TYPE_RELOAD
-      // @ts-ignore
-      const isReloadLegacy =
-        performance && performance.navigation
-          ? performance.navigation.type === 1
-          : false;
-      const isReload = Boolean(isReloadNewAPI || isReloadLegacy);
-      if (isReload) document.documentElement.classList.add("is-reload");
-    } catch (e) {}
+        const entries = performance.getEntriesByType("navigation");
+        const nav = entries && entries.length ? entries[0] : undefined;
+        // navigation.type can be: 'navigate' | 'reload' | 'back_forward' | 'prerender'
+        // Only mark reload here; first-visit handled by layout (needs-reveal)
+        // @ts-ignore - 'type' exists on PerformanceNavigationTiming at runtime
+        const isReloadNewAPI =
+          nav && typeof nav === "object" && "type" in nav
+            ? nav.type === "reload"
+            : false;
+        // Fallback (deprecated API): 1 === TYPE_RELOAD
+        // @ts-ignore
+        const isReloadLegacy =
+          performance && performance.navigation
+            ? performance.navigation.type === 1
+            : false;
+        const isReload = Boolean(isReloadNewAPI || isReloadLegacy);
+        if (isReload) document.documentElement.classList.add("is-reload");
+      } catch (e) {}
+    })();
   </script>
-  <!-- Curtain loader shown only on index page (script-driven) -->
+  <!-- Fullscreen curtain loader element -->
+  <SimpleCurtainLoader />
+  <!-- Boot script after element is in DOM -->
   <script type="module" src={bootSimpleCurtainLoader}></script>
   <main class="min-h-screen relative overflow-hidden pt-6">
     <HeroSection />
