@@ -7,6 +7,7 @@ import smoothScroll from "@/scripts/boot-smooth-scroll.ts?url";
 import pageReveal from "@/scripts/boot-page-reveal.ts?url";
 import routeCurtainTransition from "@/scripts/route-curtain-transition.ts?url";
 import navResume from "@/scripts/boot-nav-resume.ts?url";
+import Footer from "@/components/sections/Footer.astro";
 import { SITE } from "@/config/site";
 import disableTopPull from "@/scripts/disable-top-pull.ts?url";
 
@@ -120,6 +121,8 @@ const pageDesc = description ?? SITE.description;
     <noscript><style>#page-transition-overlay{display:none !important}</style></noscript>
 
     <slot />
+
+    <Footer />
 
     <script type="module" src={pageReveal}></script>
     <script type="module" src={smoothScroll}></script>
