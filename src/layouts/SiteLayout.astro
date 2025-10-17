@@ -37,6 +37,9 @@ const pageDesc = description ?? SITE.description;
         padding: 0;
         min-height: 100vh;
       }
+      /* Ensure curtain overlay is visible immediately on first visit to prevent flicker */
+      #page-transition-overlay { transform-origin: top; }
+      html.needs-reveal #page-transition-overlay { transform: scaleY(1) !important; }
       /* Prevent content jump during navigation */
       html {
         scroll-behavior: smooth;
