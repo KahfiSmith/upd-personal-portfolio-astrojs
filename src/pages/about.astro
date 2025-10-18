@@ -257,11 +257,11 @@ import drivesAnimations from "@/scripts/drives-me-animations.ts?url";
               What Drives Me
             </h3>
             <div class="flex items-center justify-center">
-              <div class="flex-1 h-px bg-gradient-to-r from-transparent via-charcoal/40 to-charcoal/60"></div>
+              <div class="flex-1 h-px bg-gradient-to-r from-transparent via-charcoal/40 to-charcoal/60" data-drives-line-left></div>
               <div class="px-6">
-                <div class="w-2 h-2 rounded-full bg-charcoal/70 shadow-sm"></div>
+                <div class="w-2 h-2 rounded-full bg-charcoal/70 shadow-sm" data-drives-dot></div>
               </div>
-              <div class="flex-1 h-px bg-gradient-to-l from-transparent via-charcoal/40 to-charcoal/60"></div>
+              <div class="flex-1 h-px bg-gradient-to-l from-transparent via-charcoal/40 to-charcoal/60" data-drives-line-right></div>
             </div>
           </div>
 
@@ -269,7 +269,7 @@ import drivesAnimations from "@/scripts/drives-me-animations.ts?url";
           <div class="max-w-6xl mx-auto space-y-16 lg:space-y-20" data-drives-container>
             
             <!-- Problem Solving Row -->
-            <div class="drives-item group" data-drives-item="1">
+            <div class="drives-item group cursor-pointer" data-drives-item="1" data-magnetic>
               <div class="py-8 md:py-12">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
                   
@@ -306,7 +306,7 @@ import drivesAnimations from "@/scripts/drives-me-animations.ts?url";
             </div>
 
             <!-- Continuous Learning Row -->
-            <div class="drives-item group" data-drives-item="2">
+            <div class="drives-item group cursor-pointer" data-drives-item="2" data-magnetic>
               <div class="py-8 md:py-12">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
                   
@@ -343,7 +343,7 @@ import drivesAnimations from "@/scripts/drives-me-animations.ts?url";
             </div>
 
             <!-- User Impact Row -->
-            <div class="drives-item group" data-drives-item="3">
+            <div class="drives-item group cursor-pointer" data-drives-item="3" data-magnetic>
               <div class="py-8 md:py-12">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
                   
