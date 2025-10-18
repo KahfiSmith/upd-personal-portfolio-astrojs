@@ -93,6 +93,8 @@
   /* Hidden by default; only show on reload */
   #simple-curtain-loader { display: none; }
   html.is-reload #simple-curtain-loader { display: block; }
+  /* If first-visit reveal is active, always hide this loader to avoid clashes */
+  html.needs-reveal #simple-curtain-loader { display: none !important; }
 </style>
 
 <noscript>

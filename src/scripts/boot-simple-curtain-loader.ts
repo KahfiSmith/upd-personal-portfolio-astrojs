@@ -69,9 +69,9 @@ class SimpleCurtainLoaderAnimation {
         if (performance && performance.navigation && performance.navigation.type === 1) return true;
       }
 
-      // First visit (marked by layout)
+      // First visit (marked by layout) uses page-transition-overlay, not this loader
       if (document.documentElement.classList.contains('needs-reveal')) {
-        return true;
+        return false;
       }
 
       // Internal navigations should not show

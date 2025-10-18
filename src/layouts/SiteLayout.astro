@@ -37,9 +37,10 @@ const pageDesc = description ?? SITE.description;
         padding: 0;
         min-height: 100vh;
       }
-      /* Ensure curtain overlay is visible immediately on first visit to prevent flicker */
-      #page-transition-overlay { transform-origin: top; }
-      html.needs-reveal #page-transition-overlay { transform: scaleY(1) !important; }
+      /* Page reveal: show overlay by default to avoid initial flicker.
+         Hide it on return visits (html.has-visited). */
+      #page-transition-overlay { transform-origin: top; transform: scaleY(1); }
+      html.has-visited #page-transition-overlay { transform: scaleY(0) !important; }
       /* Prevent content jump during navigation */
       html {
         scroll-behavior: smooth;
@@ -120,7 +121,7 @@ const pageDesc = description ?? SITE.description;
   <body class="bg-cream text-charcoal antialiased min-h-screen">
     <!-- Page-level components will render their own loaders if needed -->
     <CustomCursor />
-    <div id="page-transition-overlay" class="fixed inset-0 z-50 bg-neutral-950 pointer-events-none transform scale-y-0 origin-top"></div>
+    <div id="page-transition-overlay" class="fixed inset-0 z-50 bg-neutral-950 pointer-events-none transform origin-top"></div>
     <noscript><style>#page-transition-overlay{display:none !important}</style></noscript>
 
     <slot />
