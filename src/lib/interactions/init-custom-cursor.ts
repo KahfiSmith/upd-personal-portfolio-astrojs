@@ -79,6 +79,11 @@ export function initCustomCursor(): void {
 
   // Mouse move handler
   const onMouseMove = (e: MouseEvent) => {
+    // Do not show custom cursor during wipe transition
+    if (document.documentElement.classList.contains('wipe-transitioning')) {
+      cursor.style.opacity = "0";
+      return;
+    }
     mouseX = e.clientX;
     mouseY = e.clientY;
 
@@ -90,7 +95,10 @@ export function initCustomCursor(): void {
       cursor.style.opacity = "0";
       return;
     } else {
-      cursor.style.opacity = "1";
+      // Only allow showing when not in wipe-transition
+      if (!document.documentElement.classList.contains('wipe-transitioning')) {
+        cursor.style.opacity = "1";
+      }
     }
 
     if (!isVisible) {
