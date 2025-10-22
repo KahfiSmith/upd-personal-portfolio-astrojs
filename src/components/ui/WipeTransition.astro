@@ -51,7 +51,9 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(
+    /* Solid black background first, gradient on top */
+    background-color: #0f0f0f;
+    background-image: linear-gradient(
       135deg,
       #0f0f0f 0%,
       #1a1a1a 25%,
@@ -68,6 +70,13 @@
     overflow: hidden;
     backface-visibility: hidden;
     contain: layout paint style;
+    /* Prevent any transparency during navigation */
+    opacity: 1;
+  }
+  
+  /* Ensure overlay is fully opaque when active */
+  #wipe-transition-overlay.is-active .wipe-overlay {
+    opacity: 1 !important;
   }
 
   /* Animated gradient background */

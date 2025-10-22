@@ -72,6 +72,19 @@ function prefersReducedMotion(): boolean {
 
 let transitioning = false;
 
+async function navigateTo(href: string) {
+  try {
+    // @ts-ignore - virtual module provided by Astro; ignore TS resolution
+    const mod: any = await import(/* @vite-ignore */ 'astro:transitions/client');
+    if (mod && typeof mod.navigate === 'function') {
+      await mod.navigate(href);
+      return;
+    }
+  } catch (_) {}
+  window.location.href = href;
+}
+
+
 // Animasi wipe out (halaman menghilang dengan overlay naik dari bawah)
 function wipeOut(wipe: WipeOverlay, targetHref: string) {
   if (transitioning) {
@@ -85,7 +98,7 @@ function wipeOut(wipe: WipeOverlay, targetHref: string) {
   
   if (prefersReducedMotion()) {
     console.log('♿ Reduced motion preferred, skipping animation');
-    window.location.href = targetHref;
+    navigateTo(targetHref);
     return;
   }
   
@@ -160,10 +173,11 @@ function wipeOut(wipe: WipeOverlay, targetHref: string) {
     onStart: () => console.log('▶️ Phase 2c: Bottom decoration appearing...')
   }, '-=0.8'); // Overlap dengan title
   
-  // Setelah judul muncul, langsung navigate.
-  tl.add(() => {
-    console.log('🚀 Navigating immediately after title reveal to:', targetHref);
-    window.location.href = targetHref;
+  // Fase 3: Transition to next page immediately after title reveal
+  tl.call(() => {
+    console.log('🚀 Navigating to:', targetHref);
+    gsap.set(wipe.overlay, { y: '0%', opacity: 1, force3D: true });
+    void navigateTo(targetHref);
   });
 }
 
@@ -193,15 +207,14 @@ function wipeIn(wipe: WipeOverlay) {
       }
     });
     
-    // Animasi overlay turun dengan easing smooth
+    // Animasi overlay wipe ke atas untuk membuka konten
     tl.to(wipe.overlay, {
       y: '-100%',
       duration: 1.2,
       ease: 'power4.inOut', // Sangat smooth
       onStart: () => {
-        console.log('▶️ Overlay sliding down...');
-        // No need to toggle body visibility; overlay fully covers during wipe-in
-        // Keep custom cursor hidden for entire wipe-in to avoid flash
+        console.log('▶️ Overlay sliding up (revealing content from top)...');
+        // Keep content hidden until onComplete; #app-content is hidden via html.wipe-transitioning
       },
       onComplete: () => {
         console.log('✅ Overlay animation complete');
@@ -294,7 +307,19 @@ function boot() {
   // Cek apakah ini page load setelah navigation
   const isNavigating = sessionStorage.getItem('wipe-navigating');
   
-  if (isNavigating === 'true') {
+  // Detect if this is a refresh/reload vs navigation
+  // performance.navigation is deprecated but still works as fallback
+  const perfEntries = performance.getEntriesByType('navigation');
+  const isReload = perfEntries.length > 0 && 
+    (perfEntries[0] as PerformanceNavigationTiming).type === 'reload';
+  
+  // Clear flag if it's a reload
+  if (isReload && isNavigating === 'true') {
+    console.log('🔄 Detected page reload, clearing navigation flag');
+    sessionStorage.removeItem('wipe-navigating');
+  }
+  
+  if (isNavigating === 'true' && !isReload) {
     console.log('🎬 Running wipe-in animation...');
     
     // Add transitioning class IMMEDIATELY to hide content
@@ -335,7 +360,32 @@ function boot() {
       }, { once: true });
     }
   } else {
-    console.log('📍 First load, no wipe-in animation');
+    console.log('📍 First load or refresh - no animation, show content immediately');
+    
+    // Remove any loading classes and show content immediately
+    document.documentElement.classList.remove('wipe-initial-load');
+    document.documentElement.classList.remove('wipe-transitioning');
+    
+    // Remove any force styles that might have been left over
+    const forceStyle = document.getElementById('wipe-transition-force');
+    if (forceStyle) {
+      forceStyle.remove();
+      console.log('🧹 Removed leftover force style');
+    }
+    
+    // Ensure content is visible
+    const appContent = document.getElementById('app-content');
+    if (appContent) {
+      appContent.style.opacity = '1';
+      appContent.style.visibility = 'visible';
+    }
+    
+    // Ensure cursor is visible
+    const cursor = document.getElementById('custom-cursor');
+    if (cursor) {
+      cursor.style.opacity = '';
+      cursor.style.visibility = '';
+    }
   }
   
   setupLinkInterception(wipe);

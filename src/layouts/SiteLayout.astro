@@ -41,8 +41,9 @@ const pageDesc = description ?? SITE.description;
       }
       /* Always hide custom cursor while wipe transition is active */
       html.wipe-transitioning #custom-cursor { opacity: 0 !important; visibility: hidden !important; }
-      /* Keep app content hidden during wipe-in/out */
-      html.wipe-transitioning #app-content { opacity: 0; }
+      /* Keep app content hidden during wipe-in/out (navigation only) */
+      html.wipe-transitioning #app-content { opacity: 0; visibility: hidden; }
+      
       /* Page reveal: show overlay by default to avoid initial flicker.
          Hide it on return visits (html.has-visited). */
       #page-transition-overlay { transform-origin: top; transform: scaleY(1); }
@@ -92,8 +93,26 @@ const pageDesc = description ?? SITE.description;
     <!-- Mark visit state ASAP to avoid FOUC -->
     <script>
       try {
+        // Detect if this is a reload (new + legacy API)
+        const perfEntries = performance.getEntriesByType('navigation');
+        const nav = perfEntries && perfEntries.length ? perfEntries[0] : undefined;
+        // navigation.type can be: 'navigate' | 'reload' | 'back_forward' | 'prerender'
+        // Use runtime guard to avoid TS issues in Astro files
+        // @ts-ignore - using runtime check for 'type' property
+        const isReloadNewAPI = nav && typeof nav === 'object' && 'type' in nav
+          ? nav.type === 'reload'
+          : false;
+        // Fallback (deprecated API): 1 === TYPE_RELOAD
+        // @ts-ignore - legacy navigation API
+        const isReloadLegacy = performance && performance.navigation
+          ? performance.navigation.type === 1
+          : false;
+        const isReload = Boolean(isReloadNewAPI || isReloadLegacy);
+        
         // Check if we're in a wipe transition FIRST (before anything renders)
-        if (sessionStorage.getItem('wipe-navigating') === 'true') {
+        const isWipeNavigating = sessionStorage.getItem('wipe-navigating') === 'true';
+        
+        if (isWipeNavigating && !isReload) {
           document.documentElement.classList.add('wipe-transitioning');
           // Content visibility controlled via CSS on #app-content
           
@@ -121,6 +140,9 @@ const pageDesc = description ?? SITE.description;
             }
           `;
           document.head.appendChild(style);
+        } else if (isReload) {
+          // Clear the flag on reload
+          sessionStorage.removeItem('wipe-navigating');
         }
         
         if (localStorage.getItem('hasVisited')) {
