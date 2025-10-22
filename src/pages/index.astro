@@ -3,13 +3,12 @@ import SiteLayout from "@/layouts/SiteLayout.astro";
 import HeroSection from "@/components/sections/HeroSection.astro";
 import SkillsMarquee from "@/components/sections/SkillsMarquee.astro";
 import AboutTeaser from "@/components/sections/AboutTeaser.astro";
-import bootSimpleCurtainLoader from "@/scripts/boot-simple-curtain-loader.ts?url";
-import SimpleCurtainLoader from "@/components/ui/SimpleCurtainLoader.astro";
 ---
 
 <SiteLayout
   title="Kahfi Smith — Frontend Web Developer"
   description="Frontend developer focused on performance, accessibility, and serene UX."
+  hasLoader={true}
 >
   <!-- Mark reload as early as possible to control loader visibility -->
   <script>
@@ -48,10 +47,6 @@ import SimpleCurtainLoader from "@/components/ui/SimpleCurtainLoader.astro";
       } catch (e) {}
     })();
   </script>
-  <!-- Fullscreen curtain loader element -->
-  <SimpleCurtainLoader />
-  <!-- Boot script after element is in DOM -->
-  <script type="module" src={bootSimpleCurtainLoader}></script>
   <main class="min-h-screen relative overflow-hidden pt-6">
     <HeroSection />
 

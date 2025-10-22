@@ -12,18 +12,21 @@ import navResume from "@/scripts/boot-nav-resume.ts?url";
 import Footer from "@/components/sections/Footer.astro";
 import { SITE } from "@/config/site";
 import disableTopPull from "@/scripts/disable-top-pull.ts?url";
+import SimpleCurtainLoader from "@/components/ui/SimpleCurtainLoader.astro";
+import bootSimpleCurtainLoader from "@/scripts/boot-simple-curtain-loader.ts?url";
 
 interface Props {
   title?: string;
   description?: string;
+  hasLoader?: boolean;
 }
 
-const { title, description } = Astro.props as Props;
+const { title, description, hasLoader } = Astro.props as Props;
 const pageTitle = title ?? SITE.title;
 const pageDesc = description ?? SITE.description;
 ---
 
-<html lang="en">
+<html lang="en" class={hasLoader ? 'has-loader' : undefined}>
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/png" href="/images/kahfi-og.png" />
@@ -39,6 +42,8 @@ const pageDesc = description ?? SITE.description;
         padding: 0;
         min-height: 100vh;
       }
+      /* On reload (curtain active), use dark bg under loader only during reload */
+      html.is-reload, html.is-reload body { background: #0b0b0b; }
       /* Always hide custom cursor while wipe transition is active */
       html.wipe-transitioning #custom-cursor { opacity: 0 !important; visibility: hidden !important; }
       /* Keep app content hidden during wipe-in/out (navigation only) */
@@ -68,6 +73,8 @@ const pageDesc = description ?? SITE.description;
         animation-duration: 0.3s;
       }
     </style>
+    <!-- Early guard: hide app content on pages with loader to avoid flicker -->
+    <style id="early-app-hide">html.has-loader #app-content{visibility:hidden}</style>
     
     <!-- Preload critical fonts -->
     <link rel="preload" href="/fonts/PlayfairDisplay-VariableFont_wght.ttf" as="font" type="font/ttf" crossorigin />
@@ -91,8 +98,9 @@ const pageDesc = description ?? SITE.description;
     <ViewTransitions />
 
     <!-- Mark visit state ASAP to avoid FOUC -->
-    <script>
+    <script define:vars={{ hasLoader }}>
       try {
+        const HAS_LOADER = hasLoader === true;
         // Detect if this is a reload (new + legacy API)
         const perfEntries = performance.getEntriesByType('navigation');
         const nav = perfEntries && perfEntries.length ? perfEntries[0] : undefined;
@@ -144,6 +152,18 @@ const pageDesc = description ?? SITE.description;
           // Clear the flag on reload
           sessionStorage.removeItem('wipe-navigating');
         }
+
+        // If this page provides a loader, control initial visibility
+        if (HAS_LOADER) {
+          if (isReload) {
+            // Show simple curtain loader immediately via CSS
+            document.documentElement.classList.add('is-reload');
+          } else {
+            // Not a reload: remove guard so content is visible
+            const guard = document.getElementById('early-app-hide');
+            if (guard) guard.remove();
+          }
+        }
         
         if (localStorage.getItem('hasVisited')) {
           document.documentElement.classList.add('has-visited');
@@ -183,7 +203,7 @@ const pageDesc = description ?? SITE.description;
     <WipeTransition />
     <div id="page-transition-overlay" class="fixed inset-0 z-50 bg-neutral-950 pointer-events-none transform origin-top"></div>
     <noscript><style>#page-transition-overlay{display:none !important}</style></noscript>
-
+    {hasLoader && <SimpleCurtainLoader />}
     <div id="app-content">
       <slot />
     </div>
@@ -197,6 +217,6 @@ const pageDesc = description ?? SITE.description;
     <script type="module" src={wipeTransition}></script>
     <script type="module" src={disableTopPull}></script>
     <script type="module" src={navResume}></script>
+    {hasLoader && <script type="module" src={bootSimpleCurtainLoader}></script>}
   </body>
-  
 </html>

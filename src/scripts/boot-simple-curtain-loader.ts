@@ -272,6 +272,14 @@ class SimpleCurtainLoaderAnimation {
 
     exitTimeline
       .add('openNow')
+      // Remove early guard and is-reload when starting to open curtains
+      .call(() => {
+        try {
+          const guard = document.getElementById('early-app-hide');
+          if (guard) guard.remove();
+          document.documentElement.classList.remove('is-reload');
+        } catch (e) {}
+      }, [], 'openNow')
       // Fade brand/progress quickly
       .to([this.elements.brandName, this.elements.brandSubtitle, this.elements.progressContainer], {
         opacity: 0,

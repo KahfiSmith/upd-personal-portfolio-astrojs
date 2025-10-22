@@ -95,6 +95,8 @@
   html.is-reload #simple-curtain-loader { display: block; }
   /* If first-visit reveal is active, always hide this loader to avoid clashes */
   html.needs-reveal #simple-curtain-loader { display: none !important; }
+  /* During Astro view transitions, avoid showing page-level loader */
+  html[data-astro-transition] #simple-curtain-loader { display: none !important; }
 </style>
 
 <noscript>
