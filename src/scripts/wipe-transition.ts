@@ -91,6 +91,8 @@ function wipeOut(wipe: WipeOverlay, targetHref: string) {
     console.log('⚠️ Already transitioning, ignoring');
     return;
   }
+  
+  console.log('🎬 Starting wipe out to:', targetHref);
   transitioning = true;
   
   const pageTitle = getPageTitle(targetHref);
@@ -189,51 +191,107 @@ function wipeIn(wipe: WipeOverlay) {
     console.log('♿ Reduced motion preferred, skipping animation');
     wipe.root.classList.remove('is-active');
     transitioning = false;
-    // No direct body visibility manipulation
     document.documentElement.classList.remove('wipe-transitioning');
+    
+    // Ensure content is visible
+    const appContent = document.getElementById('app-content');
+    if (appContent) {
+      appContent.style.opacity = '1';
+      appContent.style.visibility = 'visible';
+    }
+    
+    // Restore cursor
+    const cursor = document.getElementById('custom-cursor');
+    if (cursor) {
+      cursor.style.opacity = '';
+      cursor.style.visibility = '';
+    }
     return;
   }
   
   // CRITICAL: Force overlay to be at 0% before starting animation
   gsap.set(wipe.overlay, { y: '0%', force3D: true, immediateRender: true });
   
+  // Ensure title and decorations are visible at start
+  gsap.set(wipe.title, { opacity: 1, y: 0, scale: 1 });
+  gsap.set([wipe.decorationTop, wipe.decorationBottom], { opacity: 1, scaleX: 1 });
+  
   // Small delay to ensure overlay is rendered at full screen
   setTimeout(() => {
     const tl = gsap.timeline({
       onComplete: () => {
-        console.log('✅ Wipe in complete');
+        console.log('✅ Wipe in complete - resetting state');
         wipe.root.classList.remove('is-active');
         transitioning = false;
+        console.log('🔓 Transitioning flag reset to:', transitioning);
       }
     });
     
-    // Animasi overlay wipe ke atas untuk membuka konten
+    // Fase 1: Title dan decorations fade out dengan sedikit gerakan ke atas
+    tl.to(wipe.title, {
+      opacity: 0,
+      y: -30,
+      scale: 0.9,
+      duration: 0.6,
+      ease: 'power2.in',
+      onStart: () => console.log('▶️ Phase 1: Title fading out...')
+    });
+    
+    // Decorations fade out bersamaan dengan title
+    tl.to([wipe.decorationTop, wipe.decorationBottom], {
+      opacity: 0,
+      scaleX: 0,
+      duration: 0.5,
+      ease: 'power2.in'
+    }, '-=0.5'); // Overlap dengan title fade out
+    
+    // Fase 2: Animasi overlay wipe ke atas untuk membuka konten
     tl.to(wipe.overlay, {
       y: '-100%',
       duration: 1.2,
       ease: 'power4.inOut', // Sangat smooth
       onStart: () => {
-        console.log('▶️ Overlay sliding up (revealing content from top)...');
-        // Keep content hidden until onComplete; #app-content is hidden via html.wipe-transitioning
+        console.log('▶️ Phase 2: Overlay sliding up (revealing content from top)...');
+      },
+      onUpdate: function() {
+        // Saat overlay sudah setengah jalan ke atas, mulai show content
+        if (this.progress() > 0.3) {
+          document.documentElement.classList.remove('wipe-transitioning');
+          
+          // Ensure app content is visible
+          const appContent = document.getElementById('app-content');
+          if (appContent && appContent.style.opacity !== '1') {
+            appContent.style.opacity = '1';
+            appContent.style.visibility = 'visible';
+            console.log('✅ App content made visible');
+          }
+        }
       },
       onComplete: () => {
         console.log('✅ Overlay animation complete');
-        // Remove transitioning class setelah animasi selesai
+        
+        // Final check: make sure content is visible
         document.documentElement.classList.remove('wipe-transitioning');
-        // Content visibility handled by removing 'wipe-transitioning' (CSS hides #app-content)
+        const appContent = document.getElementById('app-content');
+        if (appContent) {
+          appContent.style.opacity = '1';
+          appContent.style.visibility = 'visible';
+        }
+        
         // Now it's safe to restore cursor visibility
         const cursor = document.getElementById('custom-cursor');
         if (cursor) {
           cursor.style.opacity = '';
           cursor.style.visibility = '';
         }
+        
         // Remove all force styles after overlay fully off-screen
         const forceStyle = document.getElementById('wipe-transition-force');
         if (forceStyle) forceStyle.remove();
         const cursorHideStyle = document.getElementById('wipe-cursor-hide');
         if (cursorHideStyle) cursorHideStyle.remove();
       }
-    });
+    }, '-=0.2'); // Mulai sedikit sebelum title fade selesai untuk transisi yang lebih smooth
   }, 100); // Small delay to ensure render
 }
 
@@ -254,7 +312,14 @@ function isInternalNav(a: HTMLAnchorElement): boolean {
 function setupLinkInterception(wipe: WipeOverlay) {
   console.log('🔗 Setting up link interception...');
   
-  document.addEventListener('click', (e: MouseEvent) => {
+  // Remove existing listener if any to prevent duplicates
+  const existingListener = (window as any).__wipeTransitionClickListener;
+  if (existingListener) {
+    console.log('🧹 Removing existing click listener');
+    document.removeEventListener('click', existingListener, true);
+  }
+  
+  const clickListener = (e: MouseEvent) => {
     // Respect modifier keys/middle clicks
     if (e.defaultPrevented) return;
     if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -262,7 +327,7 @@ function setupLinkInterception(wipe: WipeOverlay) {
     const a = (e.target as HTMLElement).closest('a') as HTMLAnchorElement | null;
     if (!a) return;
     
-    console.log('🖱️ Link clicked:', a.href);
+    console.log('🖱️ Link clicked:', a.href, 'Transitioning:', transitioning);
     
     if (a.hasAttribute('data-no-transition')) {
       console.log('⏭️ Link has data-no-transition, skipping');
@@ -280,6 +345,12 @@ function setupLinkInterception(wipe: WipeOverlay) {
       return;
     }
     
+    // Check if already transitioning
+    if (transitioning) {
+      console.warn('⚠️ Navigation blocked: already transitioning');
+      return;
+    }
+    
     console.log('✨ Starting wipe transition to:', href);
     e.preventDefault();
     
@@ -287,7 +358,13 @@ function setupLinkInterception(wipe: WipeOverlay) {
     sessionStorage.setItem('wipe-navigating', 'true');
     
     wipeOut(wipe, href);
-  }, true); // Use capture phase
+  };
+  
+  // Store listener reference for later removal
+  (window as any).__wipeTransitionClickListener = clickListener;
+  
+  document.addEventListener('click', clickListener, true); // Use capture phase
+  console.log('✅ Click listener attached');
 }
 
 function boot() {
@@ -313,13 +390,32 @@ function boot() {
   const isReload = perfEntries.length > 0 && 
     (perfEntries[0] as PerformanceNavigationTiming).type === 'reload';
   
+  // Detect browser back/forward navigation
+  const isBackForward = perfEntries.length > 0 && 
+    (perfEntries[0] as PerformanceNavigationTiming).type === 'back_forward';
+  
+  console.log('Navigation type:', {
+    isNavigating,
+    isReload,
+    isBackForward,
+    perfEntries: perfEntries[0]
+  });
+  
   // Clear flag if it's a reload
   if (isReload && isNavigating === 'true') {
     console.log('🔄 Detected page reload, clearing navigation flag');
     sessionStorage.removeItem('wipe-navigating');
   }
   
-  if (isNavigating === 'true' && !isReload) {
+  // If browser back/forward, treat as navigation
+  if (isBackForward) {
+    console.log('◀️ Detected browser back/forward navigation');
+    sessionStorage.setItem('wipe-navigating', 'true');
+  }
+  
+  const shouldAnimate = (isNavigating === 'true' || isBackForward) && !isReload;
+  
+  if (shouldAnimate) {
     console.log('🎬 Running wipe-in animation...');
     
     // Add transitioning class IMMEDIATELY to hide content
@@ -336,8 +432,8 @@ function boot() {
     
     // Set posisi overlay untuk animasi masuk - overlay harus FULL SCREEN
     gsap.set(wipe.overlay, { y: '0%', force3D: true });
-    gsap.set(wipe.title, { opacity: 0 });
-    gsap.set([wipe.decorationTop, wipe.decorationBottom], { opacity: 0 });
+    gsap.set(wipe.title, { opacity: 1, y: 0, scale: 1 });
+    gsap.set([wipe.decorationTop, wipe.decorationBottom], { opacity: 1, scaleX: 1 });
     wipe.root.classList.add('is-active');
     
     // Delay lebih lama untuk memastikan:
@@ -390,6 +486,37 @@ function boot() {
   
   setupLinkInterception(wipe);
   console.log('✅ Link interception setup complete');
+  
+  // Safety fallback: ensure content is visible after a timeout
+  // This catches any edge cases where animation might fail
+  setTimeout(() => {
+    if (document.documentElement.classList.contains('wipe-transitioning')) {
+      console.warn('⚠️ Wipe transition stuck, forcing content visibility');
+      document.documentElement.classList.remove('wipe-transitioning');
+      
+      const appContent = document.getElementById('app-content');
+      if (appContent) {
+        appContent.style.opacity = '1';
+        appContent.style.visibility = 'visible';
+      }
+      
+      const cursor = document.getElementById('custom-cursor');
+      if (cursor) {
+        cursor.style.opacity = '';
+        cursor.style.visibility = '';
+      }
+      
+      if (wipe.root.classList.contains('is-active')) {
+        wipe.root.classList.remove('is-active');
+      }
+    }
+    
+    // Always reset transitioning flag after timeout as safety measure
+    if (transitioning) {
+      console.warn('⚠️ Transitioning flag still true after 5s, forcing reset');
+      transitioning = false;
+    }
+  }, 5000); // 5 second safety timeout
 }
 
 if (typeof document !== 'undefined') {
@@ -399,6 +526,41 @@ if (typeof document !== 'undefined') {
   } else {
     boot();
   }
+  
+  // Handle Astro View Transitions
+  // These events fire when using browser back/forward with Astro
+  document.addEventListener('astro:before-preparation', () => {
+    console.log('🔄 Astro: before-preparation');
+    // Set flag bahwa kita sedang navigating
+    sessionStorage.setItem('wipe-navigating', 'true');
+  });
+  
+  document.addEventListener('astro:after-swap', () => {
+    console.log('🔄 Astro: after-swap - re-booting wipe transition');
+    // Re-run boot after Astro swaps the page content
+    setTimeout(() => {
+      boot();
+    }, 100);
+  });
+  
+  document.addEventListener('astro:page-load', () => {
+    console.log('✅ Astro: page-load complete');
+    
+    // Reset transitioning flag untuk allow next navigation
+    transitioning = false;
+    console.log('🔓 Transitioning flag reset after page-load');
+    
+    // Ensure content is visible after Astro finishes loading
+    setTimeout(() => {
+      const appContent = document.getElementById('app-content');
+      if (appContent && appContent.style.visibility === 'hidden') {
+        console.log('🔧 Forcing content visibility after Astro page-load');
+        appContent.style.opacity = '1';
+        appContent.style.visibility = 'visible';
+        document.documentElement.classList.remove('wipe-transitioning');
+      }
+    }, 100);
+  });
 }
 
 export {};
