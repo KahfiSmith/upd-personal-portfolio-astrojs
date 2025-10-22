@@ -48,6 +48,14 @@ const pageDesc = description ?? SITE.description;
       html.wipe-transitioning #custom-cursor { opacity: 0 !important; visibility: hidden !important; }
       /* Keep app content hidden during wipe-in/out (navigation only) */
       html.wipe-transitioning #app-content { opacity: 0; visibility: hidden; }
+      /* Ensure background stays cream during wipe transitions */
+      html.wipe-transitioning:not(.is-reload) { background: #f4f3ed !important; }
+      html.wipe-transitioning:not(.is-reload) body { background: #f4f3ed !important; }
+      /* Enable smooth animations for app content */
+      #app-content {
+        will-change: opacity, transform;
+        transform-origin: center center;
+      }
       
       /* Page reveal: show overlay by default to avoid initial flicker.
          Hide it on return visits (html.has-visited). */

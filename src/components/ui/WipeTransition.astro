@@ -3,6 +3,9 @@
 ---
 
 <div id="wipe-transition-overlay" aria-hidden="true">
+  <!-- Backdrop solid untuk menutupi konten sepenuhnya -->
+  <div class="wipe-backdrop"></div>
+  <!-- Overlay animasi di atas backdrop -->
   <div class="wipe-overlay">
     <div class="wipe-content">
       <div class="wipe-decoration top"></div>
@@ -28,11 +31,30 @@
     pointer-events: all;
   }
 
+  /* BACKDROP: Solid layer that covers everything during transition */
+  .wipe-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #2a2a2a; /* Charcoal instead of pure black */
+    opacity: 0;
+    z-index: 1;
+    will-change: opacity;
+    pointer-events: none;
+  }
+
+  /* Show backdrop when transitioning */
+  #wipe-transition-overlay.is-active .wipe-backdrop {
+    opacity: 1;
+  }
+
   /* Prevent content flash during transition (global selectors) */
   :global(html.wipe-transitioning) {
     overflow: hidden;
-    /* Provide dark fallback background across page swap */
-    background-color: #0f0f0f;
+    /* Keep cream background during transitions (overlay will cover) */
+    background-color: #f4f3ed !important;
   }
   
   /* Keep overlay visible during transition */
@@ -40,10 +62,7 @@
     visibility: visible !important;
   }
   
-  /* Force overlay to stay at 0% (full screen) when transitioning */
-  :global(html.wipe-transitioning .wipe-overlay) {
-    transform: translateY(0%) translateZ(0) !important;
-  }
+  /* Note: Don't force transform here as it interferes with GSAP animations */
 
   .wipe-overlay {
     position: absolute;
@@ -51,27 +70,31 @@
     left: 0;
     width: 100%;
     height: 100%;
-    /* Solid black background first, gradient on top */
-    background-color: #0f0f0f;
+    /* Charcoal gradient instead of pure black */
+    background-color: #2a2a2a;
     background-image: linear-gradient(
       135deg,
-      #0f0f0f 0%,
-      #1a1a1a 25%,
-      #252525 50%,
-      #1a1a1a 75%,
-      #0f0f0f 100%
+      #2a2a2a 0%,
+      #353535 25%,
+      #404040 50%,
+      #353535 75%,
+      #2a2a2a 100%
     );
     transform: translateY(100%) translateZ(0);
     display: flex;
     align-items: center;
     justify-content: center;
-    will-change: transform;
+    will-change: transform, opacity, scale;
     position: relative;
     overflow: hidden;
     backface-visibility: hidden;
     contain: layout paint style;
     /* Prevent any transparency during navigation */
     opacity: 1;
+    /* Center scaling for dramatic effect */
+    transform-origin: center center;
+    /* Overlay berada di atas backdrop */
+    z-index: 2;
   }
   
   /* Ensure overlay is fully opaque when active */
@@ -79,7 +102,7 @@
     opacity: 1 !important;
   }
 
-  /* Animated gradient background */
+  /* Animated gradient background - Cyan */
   .wipe-overlay::before {
     content: '';
     position: absolute;
@@ -89,7 +112,7 @@
     height: 200%;
     background: radial-gradient(
       circle at center,
-      rgba(230, 126, 34, 0.15) 0%,
+      rgba(0, 229, 255, 0.15) 0%,
       transparent 60%
     );
     animation: rotate 20s linear infinite;
@@ -151,7 +174,7 @@
     background: linear-gradient(
       to right,
       transparent,
-      var(--color-retro-orange),
+      rgba(0, 229, 255, 0.8),
       transparent
     );
     opacity: 0;
@@ -184,15 +207,15 @@
     position: relative;
   }
 
-  /* Enhanced glow effect */
+  /* Enhanced glow effect - Cyan */
   .wipe-title {
     text-shadow: 
-      0 0 30px rgba(230, 126, 34, 0.5),
-      0 0 60px rgba(230, 126, 34, 0.3),
-      0 0 90px rgba(230, 126, 34, 0.2),
+      0 0 30px rgba(0, 229, 255, 0.5),
+      0 0 60px rgba(0, 229, 255, 0.3),
+      0 0 90px rgba(0, 229, 255, 0.2),
       0 2px 10px rgba(0, 0, 0, 0.8),
       0 4px 20px rgba(0, 0, 0, 0.5);
-    filter: drop-shadow(0 0 20px rgba(230, 126, 34, 0.4));
+    filter: drop-shadow(0 0 20px rgba(0, 229, 255, 0.4));
   }
 
   /* Shimmer effect */
@@ -224,10 +247,10 @@
 
   @keyframes pulse {
     0%, 100% {
-      filter: drop-shadow(0 0 20px rgba(230, 126, 34, 0.4));
+      filter: drop-shadow(0 0 20px rgba(0, 229, 255, 0.4));
     }
     50% {
-      filter: drop-shadow(0 0 35px rgba(230, 126, 34, 0.6));
+      filter: drop-shadow(0 0 35px rgba(0, 229, 255, 0.6));
     }
   }
 
