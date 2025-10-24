@@ -4,31 +4,13 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 // Initialize GSAP animations for What Drives Me section
+let drivesInited = false;
+
 export function initDrivesMeAnimations() {
-  // Set initial states
-  gsap.set("[data-drives-title]", { 
-    opacity: 0, 
-    y: 50,
-    rotationX: -15
-  });
-  
-  gsap.set("[data-drives-line-left], [data-drives-line-right]", {
-    scaleX: 0,
-    opacity: 0
-  });
-  
-  gsap.set("[data-drives-dot]", {
-    scale: 0,
-    rotation: -180
-  });
+  if (drivesInited) return;
+  drivesInited = true;
 
-  gsap.set(".drives-item", {
-    opacity: 0,
-    y: 100,
-    transformOrigin: "center center"
-  });
-
-  // Title animation sequence
+  // Title animation sequence — animate from current visible state
   const titleTl = gsap.timeline({
     scrollTrigger: {
       trigger: "[data-drives-title]",
@@ -39,31 +21,31 @@ export function initDrivesMeAnimations() {
   });
 
   titleTl
-    .to("[data-drives-title]", {
-      duration: 1.2,
-      opacity: 1,
-      y: 0,
-      rotationX: 0,
+    .from("[data-drives-title]", {
+      duration: 1.0,
+      opacity: 0,
+      y: 50,
+      rotationX: -15,
       ease: "power3.out"
     })
-    .to("[data-drives-line-left]", {
+    .from("[data-drives-line-left]", {
       duration: 0.8,
-      scaleX: 1,
-      opacity: 1,
+      scaleX: 0,
+      opacity: 0,
       transformOrigin: "right center",
       ease: "power2.out"
     }, "-=0.6")
-    .to("[data-drives-line-right]", {
+    .from("[data-drives-line-right]", {
       duration: 0.8,
-      scaleX: 1,
-      opacity: 1,
+      scaleX: 0,
+      opacity: 0,
       transformOrigin: "left center",
       ease: "power2.out"
     }, "-=0.8")
-    .to("[data-drives-dot]", {
+    .from("[data-drives-dot]", {
       duration: 0.6,
-      scale: 1,
-      rotation: 0,
+      scale: 0,
+      rotation: -180,
       ease: "back.out(1.7)"
     }, "-=0.4");
 
@@ -80,13 +62,13 @@ export function initDrivesMeAnimations() {
       }
     });
 
-    // Item entrance animation
-    itemTl.to(item, {
-      duration: 1.4,
-      opacity: 1,
-      y: 0,
+    // Item entrance animation from a subtle offset
+    itemTl.from(item, {
+      duration: 1.0,
+      opacity: 0,
+      y: 100,
       ease: "power3.out",
-      delay: index * 0.2
+      delay: index * 0.15
     });
 
     // Setup hover animations for each item
@@ -95,6 +77,9 @@ export function initDrivesMeAnimations() {
 
   // Setup scroll-triggered reveals for card elements
   setupScrollRevealAnimations();
+
+  // Ensure ScrollTrigger recalculates after setup
+  try { ScrollTrigger.refresh(); } catch {}
 }
 
 function setupItemHoverAnimations(item: Element, index: number) {
@@ -196,8 +181,36 @@ function setupScrollRevealAnimations() {
 
 }
 
+// Self-initialize on page load (Astro + normal navigation)
+function init() {
+  // Defer slightly to ensure DOM is painted
+  setTimeout(() => {
+    try {
+      initDrivesMeAnimations();
+    } catch (e) {
+      // swallow to avoid runtime breakage
+      console.error("drives-me animations init error", e);
+    }
+  }, 150);
+}
 
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 
+  // Handle Astro page transitions
+  document.addEventListener('astro:page-load', init);
+  
+  // Restore after bfcache
+  window.addEventListener('pageshow', (e) => {
+    if ((e as PageTransitionEvent).persisted) init();
+  });
+}
+
+export {};
 
 
 function getGradientColor(index: number): string {
@@ -207,9 +220,4 @@ function getGradientColor(index: number): string {
     '#a855f7'  // purple
   ];
   return colors[index] || colors[0];
-}
-
-// Auto-initialize when DOM is loaded
-if (typeof window !== 'undefined') {
-  document.addEventListener('DOMContentLoaded', initDrivesMeAnimations);
 }

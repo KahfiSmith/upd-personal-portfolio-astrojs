@@ -5,8 +5,9 @@ type WipeOverlay = {
   overlay: HTMLElement;
   backdrop: HTMLElement;
   title: HTMLElement;
-  decorationTop: HTMLElement;
-  decorationBottom: HTMLElement;
+  subtitle: HTMLElement;
+  decorationTop?: HTMLElement;
+  decorationBottom?: HTMLElement;
 };
 
 // Mapping path ke judul halaman
@@ -16,6 +17,14 @@ const PAGE_TITLES: Record<string, string> = {
   "/blog": "Blog",
   "/works": "Works",
   "/contact": "Contact",
+};
+
+const PAGE_DESCRIPTIONS: Record<string, string> = {
+  "/": "Recent highlights and featured projects.",
+  "/about": "A glimpse into my background and values.",
+  "/blog": "Thoughts, notes, and development insights.",
+  "/works": "Selected projects and case studies.",
+  "/contact": "Let’s collaborate — get in touch.",
 };
 
 console.log('🎬 Wipe Transition Script Loaded');
@@ -59,11 +68,10 @@ function buildWipeOverlay(): WipeOverlay | null {
   const backdrop = root.querySelector<HTMLElement>(".wipe-backdrop");
   const overlay = root.querySelector<HTMLElement>(".wipe-overlay");
   const title = root.querySelector<HTMLElement>(".wipe-title");
-  const decorationTop = root.querySelector<HTMLElement>(".wipe-decoration.top");
-  const decorationBottom = root.querySelector<HTMLElement>(".wipe-decoration.bottom");
+  const subtitle = root.querySelector<HTMLElement>(".wipe-subtitle");
   
-  if (!backdrop || !overlay || !title || !decorationTop || !decorationBottom) return null;
-  return { root, backdrop, overlay, title, decorationTop, decorationBottom };
+  if (!backdrop || !overlay || !title || !subtitle) return null;
+  return { root, backdrop, overlay, title, subtitle };
 }
 
 function prefersReducedMotion(): boolean {
@@ -127,6 +135,14 @@ function wipeOut(wipe: WipeOverlay, targetHref: string) {
   
   wipe.root.classList.add('is-active');
   wipe.title.textContent = pageTitle;
+  // Assign page-specific subtitle (English)
+  try {
+    const url = new URL(targetHref, window.location.origin);
+    const p = url.pathname;
+    wipe.subtitle.textContent = PAGE_DESCRIPTIONS[p] || `Opening ${pageTitle}`;
+  } catch {
+    wipe.subtitle.textContent = `Opening ${pageTitle}`;
+  }
   
   // CRITICAL: Show backdrop IMMEDIATELY to cover content
   gsap.set(wipe.backdrop, { opacity: 1 });
@@ -151,10 +167,11 @@ function wipeOut(wipe: WipeOverlay, targetHref: string) {
     y: 30,
     scale: 0.9
   });
-  gsap.set([wipe.decorationTop, wipe.decorationBottom], {
+  gsap.set(wipe.subtitle, {
     opacity: 0,
-    scaleX: 0
+    y: 20
   });
+  // No horizontal decorations
   
   const tl = gsap.timeline({});
   
@@ -169,16 +186,7 @@ function wipeOut(wipe: WipeOverlay, targetHref: string) {
     }
   });
   
-  // Fase 2a: Decoration top muncul
-  tl.to(wipe.decorationTop, {
-    opacity: 1,
-    scaleX: 1,
-    duration: 0.6,
-    ease: 'power2.out',
-    onStart: () => console.log('▶️ Phase 2a: Top decoration appearing...')
-  }, '-=0.4'); // Mulai sebelum overlay selesai
-  
-  // Fase 2b: Judul muncul dengan bounce effect
+  // Fase 2: Judul muncul dengan bounce effect
   tl.to(wipe.title, {
     opacity: 1,
     y: 0,
@@ -187,16 +195,17 @@ function wipeOut(wipe: WipeOverlay, targetHref: string) {
     ease: 'back.out(1.4)', // Bounce effect lebih kuat untuk interaktif
     onStart: () => console.log('▶️ Phase 2b: Title appearing...'),
     onComplete: () => console.log('✅ Phase 2b complete')
-  }, '-=0.4'); // Overlap dengan decoration
+  }, '-=0.2');
   
-  // Fase 2c: Decoration bottom muncul
-  tl.to(wipe.decorationBottom, {
+  // Fase 2b-2: Subtitle muncul ringan di bawah title
+  tl.to(wipe.subtitle, {
     opacity: 1,
-    scaleX: 1,
+    y: 0,
     duration: 0.6,
-    ease: 'power2.out',
-    onStart: () => console.log('▶️ Phase 2c: Bottom decoration appearing...')
-  }, '-=0.8'); // Overlap dengan title
+    ease: 'power2.out'
+  }, '-=0.5');
+  
+  // No bottom decoration
   
   // Fase 3: Hold title sebentar (biarkan user lihat)
   tl.to({}, { 
@@ -213,13 +222,15 @@ function wipeOut(wipe: WipeOverlay, targetHref: string) {
     ease: 'power2.in',
     onStart: () => console.log('▶️ Phase 4a: Title fading out...')
   });
-  
-  tl.to([wipe.decorationTop, wipe.decorationBottom], {
+  // Subtitle fade out bersamaan
+  tl.to(wipe.subtitle, {
     opacity: 0,
-    scaleX: 0,
+    y: -15,
     duration: 0.4,
     ease: 'power2.in'
-  }, '-=0.4'); // Overlap dengan title fade
+  }, '-=0.45');
+  
+  // No decoration fade
   
   // Fase 5: Wipe overlay COMPLETE ke atas untuk fully cover
   tl.to(wipe.overlay, {
@@ -292,9 +303,9 @@ function wipeIn(wipe: WipeOverlay) {
   // CRITICAL: Start with overlay at 0% (full screen) for smooth entry
   gsap.set(wipe.overlay, { y: '0%', scale: 1, opacity: 1, force3D: true, immediateRender: true });
   
-  // Show title immediately untuk continuity dari wipe out
+  // Show title/subtitle immediately for continuity from wipe out
   gsap.set(wipe.title, { opacity: 1, y: 0, scale: 1 });
-  gsap.set([wipe.decorationTop, wipe.decorationBottom], { opacity: 1, scaleX: 1 });
+  gsap.set(wipe.subtitle, { opacity: 1, y: 0 });
   
   // Small delay to ensure overlay is rendered
   setTimeout(() => {
@@ -322,23 +333,15 @@ function wipeIn(wipe: WipeOverlay) {
       ease: 'power2.inOut',
       onStart: () => console.log('▶️ Phase 2: Title dramatic exit...')
     });
-    
-    // Decorations expand dan fade bersamaan
-    tl.to(wipe.decorationTop, {
+    // Subtitle exit ringan
+    tl.to(wipe.subtitle, {
       opacity: 0,
-      scaleX: 2,
       y: -30,
       duration: 0.6,
-      ease: 'power2.out'
+      ease: 'power2.inOut'
     }, '-=0.6');
     
-    tl.to(wipe.decorationBottom, {
-      opacity: 0,
-      scaleX: 2,
-      y: 30,
-      duration: 0.6,
-      ease: 'power2.out'
-    }, '-=0.6');
+    // No decorations to animate
     
     // Fase 3: Small pause before reveal
     tl.to({}, { 
