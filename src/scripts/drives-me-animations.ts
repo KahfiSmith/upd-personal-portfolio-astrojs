@@ -75,10 +75,8 @@ export function initDrivesMeAnimations() {
     setupItemHoverAnimations(item, index);
   });
 
-  // Setup scroll-triggered reveals for card elements
-  setupScrollRevealAnimations();
-
-  // Ensure ScrollTrigger recalculates after setup
+  // Scroll-triggered reveals are handled globally via data-animate.
+  // Keep only hover + title micro-sequence to reduce duplication.
   try { ScrollTrigger.refresh(); } catch {}
 }
 
@@ -132,54 +130,7 @@ function setupItemHoverAnimations(item: Element, index: number) {
   });
 }
 
-function setupScrollRevealAnimations() {
-  // Animate numbers on scroll
-  gsap.utils.toArray('.drives-number').forEach((number: any) => {
-    gsap.fromTo(number, 
-      { 
-        opacity: 0, 
-        scale: 0.8,
-        rotationY: -90 
-      },
-      {
-        duration: 1.2,
-        opacity: 1,
-        scale: 1,
-        rotationY: 0,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: number,
-          start: "top 85%",
-          end: "bottom 15%",
-          toggleActions: "play none none reverse"
-        }
-      }
-    );
-  });
-
-  // Animate descriptions with typewriter effect
-  gsap.utils.toArray('.drives-description').forEach((desc: any) => {
-    gsap.fromTo(desc,
-      {
-        opacity: 0,
-        y: 30
-      },
-      {
-        duration: 1,
-        opacity: 1,
-        y: 0,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: desc,
-          start: "top 85%",
-          end: "bottom 15%",
-          toggleActions: "play none none reverse"
-        }
-      }
-    );
-  });
-
-}
+// Duplicate scroll reveal removed; using global initAnimations instead
 
 // Self-initialize on page load (Astro + normal navigation)
 function init() {
