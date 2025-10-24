@@ -30,23 +30,24 @@
     pointer-events: all;
   }
 
-  /* BACKDROP: Solid layer that covers everything during transition */
+  /* BACKDROP: Solid charcoal layer for wipe-out only */
+  /* Always charcoal regardless of theme - solid cover during outro */
   .wipe-backdrop {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #2a2a2a; /* Charcoal instead of pure black */
+    background-color: #2a2a2a; /* solid charcoal - always */
     opacity: 0;
     z-index: 1;
     will-change: opacity;
     pointer-events: none;
   }
 
-  /* Show backdrop when transitioning */
+  /* Backdrop opacity controlled by GSAP, not CSS */
   #wipe-transition-overlay.is-active .wipe-backdrop {
-    opacity: 1;
+    /* opacity controlled by GSAP animation */
   }
 
   /* Prevent content flash during transition (global selectors) */
@@ -69,16 +70,9 @@
     left: 0;
     width: 100%;
     height: 100%;
-    /* Charcoal gradient instead of pure black */
+    /* Default: charcoal gradient */
     background-color: #2a2a2a;
-    background-image: linear-gradient(
-      135deg,
-      #2a2a2a 0%,
-      #353535 25%,
-      #404040 50%,
-      #353535 75%,
-      #2a2a2a 100%
-    );
+    background-image: linear-gradient(135deg,#2a2a2a 0%,#353535 25%,#404040 50%,#353535 75%,#2a2a2a 100%);
     transform: translateY(100%) translateZ(0);
     display: flex;
     align-items: center;
@@ -111,6 +105,12 @@
     height: 200%;
     background: none;
     opacity: 0;
+  }
+
+  /* Light theme for home: flat cream overlay */
+  #wipe-transition-overlay.wipe-light .wipe-overlay {
+    background-color: #f4f3ed;
+    background-image: none;
   }
 
   /* Keep disabled */
@@ -166,7 +166,7 @@
     font-family: var(--font-display);
     font-size: clamp(1.25rem, 4.5vw, 1.5rem);
     font-weight: 700;
-    color: #ffffff;
+    color: #ffffff; /* default for dark */
     text-transform: uppercase;
     letter-spacing: 0.08em;
     opacity: 0;
@@ -179,12 +179,15 @@
     position: relative;
   }
 
+  /* Light theme title color */
+  #wipe-transition-overlay.wipe-light .wipe-title { color: #0b0b0b; }
+
   /* Subtitle below title */
   .wipe-subtitle {
     font-family: Outfit, "Space Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
     font-size: clamp(0.95rem, 2.2vw, 1.1rem);
     font-weight: 500;
-    color: rgba(255,255,255,0.9);
+    color: rgba(255,255,255,0.9); /* default for dark */
     letter-spacing: 0.01em;
     line-height: 1.5;
     opacity: 0;
@@ -193,6 +196,9 @@
     text-align: center;
     padding: 0 2rem;
   }
+
+  /* Light theme subtitle color */
+  #wipe-transition-overlay.wipe-light .wipe-subtitle { color: rgba(11,11,11,0.8); }
 
   @media (max-width: 768px) {
     .wipe-title {
@@ -205,6 +211,10 @@
 
   /* Smooth transitions */
   * {
+  /* Light theme for home: use cream backdrop */
+  #wipe-transition-overlay.wipe-light .wipe-backdrop {
+    background-color: #f4f3ed;
+  }
     backface-visibility: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

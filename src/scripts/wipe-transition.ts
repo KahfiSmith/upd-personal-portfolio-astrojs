@@ -105,23 +105,13 @@ function wipeOut(wipe: WipeOverlay, targetHref: string) {
   console.log('🎬 Starting wipe out to:', targetHref);
   transitioning = true;
   
-  // STEP 1: FREEZE CURRENT PAGE - Capture screen as snapshot
+  // DON'T hide content immediately - let overlay wipe over it naturally
   const appContent = document.getElementById('app-content');
   if (appContent) {
-    // Force GPU rendering and lock current state
-    appContent.style.willChange = 'auto';
+    // Keep content visible for smooth wipe
+    appContent.style.willChange = 'transform, opacity';
     appContent.style.transform = 'translateZ(0)';
-    
-    // Take snapshot by cloning visible state (no interaction)
-    const contentRect = appContent.getBoundingClientRect();
-    console.log('📸 Freezing current page state', contentRect);
-    
-    // Immediately hide real content but keep frozen snapshot visible via overlay
-    requestAnimationFrame(() => {
-      appContent.style.opacity = '0';
-      appContent.style.pointerEvents = 'none';
-      console.log('🔒 Real content hidden, frozen snapshot active');
-    });
+    console.log('✅ Content stays visible - overlay will wipe over it');
   }
   
   const pageTitle = getPageTitle(targetHref);
@@ -140,16 +130,18 @@ function wipeOut(wipe: WipeOverlay, targetHref: string) {
     const url = new URL(targetHref, window.location.origin);
     const p = url.pathname;
     wipe.subtitle.textContent = PAGE_DESCRIPTIONS[p] || `Opening ${pageTitle}`;
+    // Apply light theme for home route
+    if (p === '/') wipe.root.classList.add('wipe-light');
+    else wipe.root.classList.remove('wipe-light');
   } catch {
     wipe.subtitle.textContent = `Opening ${pageTitle}`;
+    wipe.root.classList.remove('wipe-light');
   }
   
-  // CRITICAL: Show backdrop IMMEDIATELY to cover content
+  // Show backdrop IMMEDIATELY with full opacity (solid cover)
+  // This prevents any content flash during wipe-out
   gsap.set(wipe.backdrop, { opacity: 1 });
-  console.log('🛡️ Backdrop activated - content now covered');
-  
-  // Note: We add 'wipe-transitioning' AFTER backdrop is visible
-  document.documentElement.classList.add('wipe-transitioning');
+  console.log('🛡️ Backdrop solid cover activated - no content flash');
   
   // Hide cursor during transition
   const cursor = document.getElementById('custom-cursor');
@@ -175,76 +167,86 @@ function wipeOut(wipe: WipeOverlay, targetHref: string) {
   
   const tl = gsap.timeline({});
   
-  // Fase 1: Overlay wipe dari bawah ke atas dengan ease yang lebih smooth
+  // Fase 1: Overlay wipe dari bawah ke atas dengan ease yang santai dan smooth
   tl.to(wipe.overlay, {
     y: '0%',
-    duration: 1.2,
-    ease: 'power4.inOut', // Lebih smooth dari power3
-    onStart: () => console.log('▶️ Phase 1: Overlay sliding up (backdrop already covering)...'),
+    duration: 1.8, // Lebih santai dan tidak terburu-buru
+    ease: 'power2.inOut', // Ease lebih gentle
+    onStart: () => console.log('▶️ Phase 1: Overlay sliding up with solid backdrop...'),
+    onUpdate: function() {
+      // Disable pointer events when overlay is halfway up
+      if (this.progress() > 0.5 && !this.vars.contentDisabled) {
+        this.vars.contentDisabled = true;
+        const appContent = document.getElementById('app-content');
+        if (appContent) {
+          appContent.style.pointerEvents = 'none';
+        }
+        console.log('🔒 Content interactions disabled');
+      }
+    },
     onComplete: () => {
-      console.log('✅ Phase 1 complete - screen fully covered');
+      console.log('✅ Phase 1 complete - screen covered with overlay');
     }
   });
   
-  // Fase 2: Judul muncul dengan bounce effect
+  // Fase 2: Judul muncul dengan bounce effect yang lebih gentle
   tl.to(wipe.title, {
     opacity: 1,
     y: 0,
     scale: 1,
-    duration: 1.0,
-    ease: 'back.out(1.4)', // Bounce effect lebih kuat untuk interaktif
-    onStart: () => console.log('▶️ Phase 2b: Title appearing...'),
-    onComplete: () => console.log('✅ Phase 2b complete')
-  }, '-=0.2');
+    duration: 1.2, // Lebih santai
+    ease: 'back.out(1.2)', // Bounce lebih subtle
+    onStart: () => console.log('▶️ Phase 2: Title appearing gently...'),
+    onComplete: () => console.log('✅ Phase 2 complete')
+  }, '-=0.4');
   
-  // Fase 2b-2: Subtitle muncul ringan di bawah title
+  // Fase 2b: Subtitle muncul ringan di bawah title
   tl.to(wipe.subtitle, {
     opacity: 1,
     y: 0,
-    duration: 0.6,
+    duration: 0.8, // Lebih santai
     ease: 'power2.out'
-  }, '-=0.5');
+  }, '-=0.7');
   
   // No bottom decoration
   
-  // Fase 3: Hold title sebentar (biarkan user lihat)
+  // Fase 3: Hold title lebih lama agar user bisa lihat dengan nyaman
   tl.to({}, { 
-    duration: 0.8, // Hold for 0.8 seconds
+    duration: 1.0, // Hold lebih lama untuk santai
     onStart: () => console.log('⏸️ Phase 3: Holding title display...')
   });
   
-  // Fase 4: Fade out title dan decorations
+  // Fase 4: Fade out title dan subtitle dengan gentle
   tl.to(wipe.title, {
     opacity: 0,
     y: -20,
     scale: 0.95,
-    duration: 0.5,
+    duration: 0.7, // Lebih santai
     ease: 'power2.in',
-    onStart: () => console.log('▶️ Phase 4a: Title fading out...')
+    onStart: () => console.log('▶️ Phase 4: Title fading out gently...')
   });
   // Subtitle fade out bersamaan
   tl.to(wipe.subtitle, {
     opacity: 0,
     y: -15,
-    duration: 0.4,
+    duration: 0.6, // Lebih santai
     ease: 'power2.in'
-  }, '-=0.45');
+  }, '-=0.6');
   
   // No decoration fade
   
-  // Fase 5: Wipe overlay COMPLETE ke atas untuk fully cover
+  // Fase 5: Wipe overlay keluar dengan santai
   tl.to(wipe.overlay, {
     y: '-100%',
-    duration: 0.8,
-    ease: 'power3.inOut',
+    duration: 1.0, // Lebih santai dari 0.8s
+    ease: 'power2.inOut', // Ease lebih gentle
     onStart: () => {
-      console.log('▶️ Phase 5: Overlay wiping up completely...');
+      console.log('▶️ Phase 5: Overlay wiping out gently...');
       console.log('⏱️ Total duration until navigation:', tl.duration());
       
-      // CRITICAL: Add wipe-transitioning class to hide content IMMEDIATELY
-      // This prevents any flicker of old content
+      // Add transitioning class only now for smooth navigation
       document.documentElement.classList.add('wipe-transitioning');
-      console.log('🔒 Content hidden - safe to animate overlay');
+      console.log('🔒 Preparing for navigation - overlay will cover everything');
     },
     onUpdate: function() {
       // Navigate saat overlay HAMPIR SELESAI (95% = overlay at -95%)
@@ -277,7 +279,7 @@ function wipeIn(wipe: WipeOverlay) {
     transitioning = false;
     document.documentElement.classList.remove('wipe-transitioning');
     
-    // Hide backdrop
+    // Ensure backdrop is hidden
     gsap.set(wipe.backdrop, { opacity: 0 });
     
     // Ensure content is visible
@@ -296,9 +298,9 @@ function wipeIn(wipe: WipeOverlay) {
     return;
   }
   
-  // CRITICAL: Backdrop stays visible during entire wipe in
-  gsap.set(wipe.backdrop, { opacity: 1 });
-  console.log('🛡️ Backdrop still covering - prevents any flicker');
+  // NO backdrop for wipe-in - clean reveal without backdrop
+  gsap.set(wipe.backdrop, { opacity: 0 });
+  console.log('✨ Wipe-in without backdrop - clean content reveal');
   
   // CRITICAL: Start with overlay at 0% (full screen) for smooth entry
   gsap.set(wipe.overlay, { y: '0%', scale: 1, opacity: 1, force3D: true, immediateRender: true });
@@ -325,29 +327,36 @@ function wipeIn(wipe: WipeOverlay) {
     });
     
     // Fase 2: Title dan decorations dramatic exit (0.7s)
+    // Fase 1: Hold title sebentar untuk continuity (lebih santai)
+    tl.to({}, { 
+      duration: 0.8, // Lebih santai
+      onStart: () => console.log('⏸️ Phase 1: Holding title for smooth transition...')
+    });
+    
+    // Fase 2: Title dan subtitle gentle exit
     tl.to(wipe.title, {
       opacity: 0,
-      scale: 1.5,
-      y: -50,
-      duration: 0.7,
+      scale: 1.3, // Tidak terlalu dramatis
+      y: -40,
+      duration: 0.9, // Lebih santai
       ease: 'power2.inOut',
-      onStart: () => console.log('▶️ Phase 2: Title dramatic exit...')
+      onStart: () => console.log('▶️ Phase 2: Title gentle exit...')
     });
     // Subtitle exit ringan
     tl.to(wipe.subtitle, {
       opacity: 0,
-      y: -30,
-      duration: 0.6,
+      y: -25,
+      duration: 0.8, // Lebih santai
       ease: 'power2.inOut'
-    }, '-=0.6');
+    }, '-=0.8');
     
     // No decorations to animate
     
-    // Fase 3: Small pause before reveal
+    // Fase 3: Pause sebelum reveal
     tl.to({}, { 
-      duration: 0.1,
+      duration: 0.2, // Sedikit pause
       onStart: () => {
-        console.log('▶️ Phase 3: Preparing dramatic reveal...');
+        console.log('▶️ Phase 3: Preparing content reveal...');
         // Remove transitioning class early to show content behind overlay
         document.documentElement.classList.remove('wipe-transitioning');
         
@@ -364,32 +373,32 @@ function wipeIn(wipe: WipeOverlay) {
           // Set initial state for content animation
           gsap.set(appContent, { 
             opacity: 0,
-            scale: 0.95,
+            scale: 0.98, // Lebih subtle
             force3D: true
           });
         }
       }
     });
     
-    // Fase 4: Overlay scale + fade untuk dramatic reveal (1.2s)
+    // Fase 4: Overlay scale + fade untuk gentle reveal
     tl.to(wipe.overlay, {
-      scale: 1.5,
+      scale: 1.3, // Tidak terlalu dramatis
       opacity: 0,
-      duration: 1.2,
-      ease: 'expo.inOut',
+      duration: 1.5, // Lebih santai dan smooth
+      ease: 'power2.inOut', // Ease lebih gentle
       onStart: () => {
-        console.log('▶️ Phase 4: Overlay dramatic reveal...');
+        console.log('▶️ Phase 4: Overlay gentle reveal...');
         // Start content animation
         const appContent = document.getElementById('app-content');
         if (appContent) {
           gsap.to(appContent, {
             opacity: 1,
             scale: 1,
-            duration: 1.2,
+            duration: 1.5, // Lebih santai
             ease: 'power2.out',
             force3D: true,
             onStart: () => {
-              console.log('✅ App content animating in');
+              console.log('✅ App content animating in gently');
             }
           });
         }
@@ -397,15 +406,7 @@ function wipeIn(wipe: WipeOverlay) {
       onComplete: () => {
         console.log('✅ Overlay animation complete');
         
-        // CRITICAL: Fade out backdrop AFTER overlay is gone
-        gsap.to(wipe.backdrop, {
-          opacity: 0,
-          duration: 0.3,
-          ease: 'power2.out',
-          onComplete: () => {
-            console.log('🛡️ Backdrop hidden - content fully revealed');
-          }
-        });
+        // No backdrop to fade out - we're not using it in wipe-in
         
         // Final check and cleanup
         document.documentElement.classList.remove('wipe-transitioning');
@@ -560,7 +561,17 @@ function boot() {
     sessionStorage.setItem('wipe-navigating', 'true');
   }
   
-  const shouldAnimate = (isNavigating === 'true' || isBackForward) && !isReload;
+  // Check if we're on the home/index page
+  const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index.html';
+  
+  console.log('Page detection:', {
+    isHomePage,
+    pathname: window.location.pathname
+  });
+  
+  // For home page: skip wipe-in animation entirely (let SimpleCurtainLoader handle it)
+  // For other pages: animate only if navigating from another page (not on reload)
+  const shouldAnimate = (isNavigating === 'true' || isBackForward) && !isReload && !isHomePage;
   
   if (shouldAnimate) {
     console.log('🎬 Running wipe-in animation...');
@@ -577,10 +588,16 @@ function boot() {
     
     sessionStorage.removeItem('wipe-navigating');
     
+    // Theme: light for home route, dark otherwise
+    try {
+      const pathname = window.location.pathname;
+      if (pathname === '/') wipe.root.classList.add('wipe-light');
+      else wipe.root.classList.remove('wipe-light');
+    } catch {}
+
     // Set initial state - overlay at 0% (full screen) with title visible
     gsap.set(wipe.overlay, { y: '0%', scale: 1, opacity: 1, force3D: true });
     gsap.set(wipe.title, { opacity: 1, y: 0, scale: 1 }); // Title visible immediately!
-    gsap.set([wipe.decorationTop, wipe.decorationBottom], { opacity: 1, scaleX: 1 });
     wipe.root.classList.add('is-active');
     
     // Force cream background immediately
@@ -617,7 +634,11 @@ function boot() {
       }, { once: true });
     }
   } else {
-    console.log('📍 First load or refresh - no animation, show content immediately');
+    if (isHomePage) {
+      console.log('🏠 Home page - no wipe animation, letting SimpleCurtainLoader handle reveal');
+    } else {
+      console.log('📍 First load or refresh - no animation, show content immediately');
+    }
     
     // Remove any loading classes and show content immediately
     document.documentElement.classList.remove('wipe-initial-load');
