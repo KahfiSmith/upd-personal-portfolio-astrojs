@@ -24,10 +24,12 @@
     z-index: 9999;
     pointer-events: none;
     overflow: hidden;
+    visibility: hidden; /* Hidden by default, shown only when .is-active */
   }
 
   #wipe-transition-overlay.is-active {
     pointer-events: all;
+    visibility: visible; /* Show when active */
   }
 
   /* BACKDROP: Solid charcoal layer for wipe-out only */
@@ -184,11 +186,11 @@
 
   /* Subtitle below title */
   .wipe-subtitle {
-    font-family: Outfit, "Space Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-family: "Space Grotesk", Outfit, ui-sans-serif, system-ui, -apple-system, sans-serif;
     font-size: clamp(0.95rem, 2.2vw, 1.1rem);
-    font-weight: 500;
-    color: rgba(255,255,255,0.9); /* default for dark */
-    letter-spacing: 0.01em;
+    font-weight: 600; /* Lebih tegas dari 500 */
+    color: rgba(255,255,255,0.95); /* Lebih solid untuk ketegasan */
+    letter-spacing: 0.02em; /* Sedikit lebih lebar untuk clarity */
     line-height: 1.5;
     opacity: 0;
     transform: translateY(20px);
@@ -198,7 +200,7 @@
   }
 
   /* Light theme subtitle color */
-  #wipe-transition-overlay.wipe-light .wipe-subtitle { color: rgba(11,11,11,0.8); }
+  #wipe-transition-overlay.wipe-light .wipe-subtitle { color: rgba(11,11,11,0.85); }
 
   @media (max-width: 768px) {
     .wipe-title {
